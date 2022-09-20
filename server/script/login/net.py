@@ -22,6 +22,6 @@ def CB_GetDataFromDs(sSub, i, d):
 
 @coroutine
 def GetDataFromDs2(sSub):
-	from rpc import AsyncCallFunc
-	ret = yield AsyncCallFunc(2001, "rpcclient.Test", 1, a=2)
+	from rpc import AsyncRemoteCallFunc
+	ret = yield AsyncRemoteCallFunc(2001, "rpcclient.Test", 1, a=2)
 	print("接收到协程rpc处理结果 %s"%(ret))

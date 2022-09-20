@@ -9,4 +9,4 @@ Receive = myrpc.Receive
 RemoveRpcByLink = myrpc.RemoveRpcByLink
 RpcFunctor = myrpc.RpcFunctor
 RpcOnlyCBFunctor = myrpc.RpcOnlyCBFunctor
-AsyncCallFunc = myrpc.AsyncCallFunc
+AsyncRemoteCallFunc = myrpc.AsyncRemoteCallFunc
