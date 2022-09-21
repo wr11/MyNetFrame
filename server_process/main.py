@@ -6,8 +6,13 @@ import multiprocessing
 import script
 import net
 import mq
+import sys
+import conf
 
 if __name__ == "__main__":
+	iServerID, iIndex = sys.argv[1], sys.argv[2]
+
+	conf.Init(int(iServerID), int(iIndex))
 	mq.Init()
 
 	oSendMq = mq.GetMq(MSGQUEUE_SEND)

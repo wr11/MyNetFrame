@@ -1,2 +1,2 @@
-python %~dp0\ds\main.py
+python -B %~dp0\ds\main.py
 pause
