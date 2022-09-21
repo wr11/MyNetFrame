@@ -11,6 +11,7 @@ VERSION = 1
 GATE = 10	#网关
 GPS = 11	#玩法
 DBS = 12	#数据落地(redis+mysql)
+LGS = 13	#登录
 MCM = 98	#全局集群管理(Master Cluster Manager)
 LCM = 99	#本地集群管理(Local Cluster Manager)
 
@@ -91,6 +92,12 @@ SERVER_ALLOCATE = [
 				"sIP"			:	"127.0.0.1",
 				"iPort"			:	20004,
 				"iType"			:	DBS,
+			},
+			{
+				"iIndex"		:	5,
+				"sIP"			:	"127.0.0.1",
+				"iPort"			:	20005,
+				"iType"			:	LGS,
 			},
 		],
 	},
