@@ -11,7 +11,7 @@ import timer
 import mq
 import net.link as link
 
-#-------------客户端与服务器的连接实例---------------
+#-------------主动连接(作为客户端连接其他服务器)实例---------------
 class CServer(twisted.internet.protocol.Protocol):
 	def connectionMade(self):
 		oLink = CallManagerFunc("link", "AddLink", self, C2S)
@@ -39,7 +39,7 @@ class CServer(twisted.internet.protocol.Protocol):
 class CBaseServerFactory(twisted.internet.protocol.Factory):
 	protocol = CServer
 
-#--------------服务器与服务器的连接实例---------------
+#--------------接受连接(作为服务器接受其他客户端的连接)实例---------------
 class CSubServer(twisted.internet.protocol.Protocol):
 	def connectionMade(self):
 		oLink = CallManagerFunc("link", "AddLink", self, S2S)
