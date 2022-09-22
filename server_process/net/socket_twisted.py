@@ -2,12 +2,12 @@
 
 from operator import index
 from pubdefines import CSERVER_PORT, MSGQUEUE_SEND, MSGQUEUE_RECV, DELAY_TIME, CallManagerFunc, C2S, S2S, SSERVER_PORT, SELF
-from protocol import S2C_CONNECT, SELF_LOCALMAP
+from protocol import S2C_CONNECT, SELF_LOCALMAP, SS_IDENTIFY
+from net.netpackage import *
 
 import twisted
 import twisted.internet.protocol
 import twisted.internet.reactor
-import net.netpackage as netpackage
 import timer
 import mq
 import net.link as link
@@ -37,6 +37,7 @@ class DeferClient(twisted.internet.protocol.Protocol):
 			timer.Call_out(DELAY_TIME, "SendMq_Handler", SendMq_Handler)
 
 		PutData((SELF, SELF_LOCALMAP, (self.m_ServerID, self.m_Index)))
+		d
 
 	def dataReceived(self, data):
 		iID = g_ConnectLink.index(self)
@@ -141,3 +142,10 @@ def PutData(data):
 			return
 		oRecvMq.put(data)
 		print("网络层接收到数据，并已加入消息队列")
+
+def S2SIdentify(oProto, iServer, iIndex):
+	oPacketPrepare = PacketPrepare(SS_IDENTIFY)
+	PacketAddI(iServer, oPacketPrepare)
+	PacketAddI(iIndex, oPacketPrepare)
+	bData = oPacketPrepare.m_BytesBuffer
+	oProto.transport.getHandle().sendall(bData)
