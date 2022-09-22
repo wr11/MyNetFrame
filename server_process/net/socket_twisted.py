@@ -2,7 +2,7 @@
 
 from operator import index
 from pubdefines import CSERVER_PORT, MSGQUEUE_SEND, MSGQUEUE_RECV, DELAY_TIME, CallManagerFunc, C2S, S2S, SSERVER_PORT, SELF
-from protocol import S2C_CONNECT
+from protocol import S2C_CONNECT, SELF_LOCALMAP
 
 import twisted
 import twisted.internet.protocol
@@ -35,6 +35,8 @@ class DeferClient(twisted.internet.protocol.Protocol):
 		print("主动连接%s 已建立网络层连接"%iID)
 		if not timer.GetTimer("SendMq_Handler"):
 			timer.Call_out(DELAY_TIME, "SendMq_Handler", SendMq_Handler)
+
+		PutData((SELF, SELF_LOCALMAP, (self.m_ServerID, self.m_Index)))
 
 	def dataReceived(self, data):
 		iID = g_ConnectLink.index(self)
