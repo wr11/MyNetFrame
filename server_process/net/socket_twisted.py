@@ -37,7 +37,7 @@ class DeferClient(twisted.internet.protocol.Protocol):
 			timer.Call_out(DELAY_TIME, "SendMq_Handler", SendMq_Handler)
 
 		PutData((SELF, SELF_LOCALMAP, (self.m_ServerID, self.m_Index)))
-		d
+		S2SIdentify(self, self.m_ServerID, self.m_Index)
 
 	def dataReceived(self, data):
 		iID = g_ConnectLink.index(self)
