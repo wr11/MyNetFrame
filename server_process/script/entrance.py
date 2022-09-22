@@ -20,7 +20,8 @@ def RecvMq_Handler():
 		netcommand.NetCommand(tData)
 	Call_out(DELAY_TIME, "RecvMq_Handler", RecvMq_Handler)
 
-def run(oSendMq, oRecvMq):
+def run(oSendMq, oRecvMq, oConfInitFunc):
+	oConfInitFunc()
 	user.Init()
 	mq.SetMq(oSendMq, MSGQUEUE_SEND)
 	mq.SetMq(oRecvMq, MSGQUEUE_RECV)
