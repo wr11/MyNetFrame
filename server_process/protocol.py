@@ -9,11 +9,13 @@ SS2S_RPCCALL = 0X1002
 SS2S_RPCRESPONSE = 0x1003
 SS2S_RESPONSEERR = 0x1004
 
+#---------------mq----------------
+MQ_LOCALMAKEROUTE = 0x1
+MQ_DISCONNECT = 0x2
+MQ_DATARECEIVED = 0x3
+
 #---------------C2S----------------
 
 
 #---------------SS----------------
 SS_IDENTIFY =  0x1005
-
-#---------------self----------------
-SELF_LOCALMAP = 0x1

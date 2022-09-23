@@ -20,39 +20,46 @@ class CNetCommand:
 		func = self.m_Map.get(iHeader, None)
 		func(who, oNetPackage)
 
-def NetCommand(tData):
+def MQMessage(tData):
 	import rpc
-	iType, iLink, bData = tData
-	if iType == SELF:
-		OnSelfMessage(iLink, bData)
+	iMQProto, data = tData
+	if iMQProto < 0x100:
+		OnMQMessage(tData)
 		return
-	oNetPackage = np.UnpackPrepare(bData)
-	iHeader = np.UnpackI(oNetPackage)
-	if iType == C2S:
+	else:
+		OnOtherMessage(data)
+
+def OnMQMessage(tData):
+	iMQHeader, data = tData
+	ParseMQMessage(iMQHeader, data)
+
+def OnOtherMessage(data):
+	pass
+
+def ParseMQMessage(iMQHeader, data):
+	if iMQHeader == MQ_LOCALMAKEROUTE:
+		sHost, iPort, iServer, iIndex = data
+		CallManagerFunc("link", "AddLink", sHost, iPort, iServer, iIndex)
+		print("业务层建立连接%s %s %s %s"%(sHost, iPort, iServer, iIndex))
+	elif iMQHeader == MQ_DISCONNECT:
+		iServer, iIndex = data
+		CallManagerFunc("link", "DelLink", iServer, iIndex)
+		print("业务层断开连接%s %s"%(iServer, iIndex))
+	elif iMQHeader == MQ_DATARECEIVED:
+		NetCommand(data)
+
+def NetCommand(data):
+	oNetPackage = np.UnpackPrepare(data)
+	iDataHeader = np.UnpackI(oNetPackage)
+	if 0x100 <= iDataHeader < 0x1000:
+		iLink = 1
 		who = CallManagerFunc("user", "GetUser", iLink)
 		if not who:
 			who = CallManagerFunc("user", "AddUser", iLink)
-		print("【服务端】接收头部数据 %s" % iHeader)
-		CNetCommand().CallCommand(iHeader, oNetPackage, who)
-	elif iType == S2S:
-		if iHeader == SS2S_ESTABLISH:
-			iServerNum = np.UnpackI(oNetPackage)
-			print("服务器编号%s建立channel"%iServerNum)
-			g_ServerNum2Link[iServerNum] = iLink
-			oPack = np.PacketPrepare(SS2S_ESTABLISH_CONFIRM)
-			np.PacketAddI(SERVER_NUM, oPack)
-			np.S2SPacketSend(iLink, oPack)
-			return
-		elif iHeader in RPC_PROTOCOL:
+		print("【服务端】接收头部数据 %s" % iDataHeader)
+		CNetCommand().CallCommand(iDataHeader, oNetPackage, who)
+	elif iDataHeader >= 0x1000:
+		if iDataHeader in RPC_PROTOCOL:
 			import rpc.myrpc as rpc
-			bData = np.UnpackEnd(oNetPackage)
-			rpc.Receive(iHeader, bData)
-
-def OnSelfMessage(iLink, data):
-	import rpc
-	if data == "cdisconnect":
-		who = CallManagerFunc("user", "GetUser", iLink)
-		if who:
-			who.Quit()
-	elif data == "sdisconnect":
-		rpc.RemoveRpcByLink(iLink)
+			data = np.UnpackEnd(oNetPackage)
+			rpc.Receive(iDataHeader, data)

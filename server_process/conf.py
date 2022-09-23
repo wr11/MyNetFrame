@@ -15,6 +15,15 @@ LGS 	=	1<<3		#登录
 MCM 	=	1<<4		#全局集群管理(Master Cluster Manager)
 LCM 	= 	1<<5		#本地集群管理(Local Cluster Manager)
 
+TYPE2NAME = {
+	GATE:"GATE",
+	GPS:"GPS",
+	DBS:"DBS",
+	LGS:"LGS",
+	MCM:"MCM",
+	LCM:"LCM",
+}
+
 ALL_PROC = GATE|GPS|DBS|LGS|MCM|LCM
 
 LEAD = 1
@@ -56,7 +65,7 @@ Master Cluster Manager由LEAD和FOLLOWERS组成
 
 3.
 lstProcessConfig中index从一开始依次增加1
-port从10000开始即可
+port  10000 + 当前server所在数组下标*1000 + iIndex
 服务器编号为1000+数组下标
 
 4.
@@ -65,6 +74,70 @@ MCM仅与每个服的LCM通信(即LCM会上报当前服各进程状态)
 5.
 GPS和DBS数量应对应
 '''
+# SERVER_ALLOCATE = [
+# 	#Master Cluster Manager Server
+# 	{
+# 		"iServerID" 		:	0,
+# 		"sServerName"		:	"Master Cluster Manager",
+# 		"lstProcessConfig"	:	[
+# 			{
+# 				"iIndex"		:	1,
+# 				"sIP"			:	"localhost",
+# 				"iPort"			:	10001,
+# 				"iType"			:	MCM,
+# 				"iRole"			:	LEAD,
+# 				"iConcern"		:	2,
+# 			},
+# 			{
+# 				"iIndex"		:	2,
+# 				"sIP"			:	"localhost",
+# 				"iPort"			:	10002,
+# 				"iType"			:	MCM,
+# 				"iRole"			:	FOLLOWER,
+# 				"iConcern"		:	1,
+# 			},
+# 		],
+# 	},
+
+# 	#Logic Server1(index 为数组下标加1, iServerID为999加数组下标)
+# 	{
+# 		"iServerID" 		:	1000,
+# 		"sServerName"		:	"ServerTest",
+# 		"lstProcessConfig"	:	[
+# 			{
+# 				"iIndex"		:	1,
+# 				"sIP"			:	"localhost",
+# 				"iPort"			:	11001,
+# 				"iType"			:	LCM,
+# 			},
+# 			{
+# 				"iIndex"		:	2,
+# 				"sIP"			:	"localhost",
+# 				"iPort"			:	11002,
+# 				"iType"			:	GATE,
+# 			},
+# 			{
+# 				"iIndex"		:	3,
+# 				"sIP"			:	"localhost",
+# 				"iPort"			:	11003,
+# 				"iType"			:	GPS,
+# 			},
+# 			{
+# 				"iIndex"		:	4,
+# 				"sIP"			:	"localhost",
+# 				"iPort"			:	11004,
+# 				"iType"			:	DBS,
+# 			},
+# 			{
+# 				"iIndex"		:	5,
+# 				"sIP"			:	"localhost",
+# 				"iPort"			:	11005,
+# 				"iType"			:	LGS,
+# 			},
+# 		],
+# 	},
+# ]
+
 SERVER_ALLOCATE = [
 	#Master Cluster Manager Server
 	{
@@ -79,14 +152,6 @@ SERVER_ALLOCATE = [
 				"iRole"			:	LEAD,
 				"iConcern"		:	2,
 			},
-			{
-				"iIndex"		:	2,
-				"sIP"			:	"localhost",
-				"iPort"			:	10002,
-				"iType"			:	MCM,
-				"iRole"			:	FOLLOWER,
-				"iConcern"		:	1,
-			},
 		],
 	},
 
@@ -98,32 +163,8 @@ SERVER_ALLOCATE = [
 			{
 				"iIndex"		:	1,
 				"sIP"			:	"localhost",
-				"iPort"			:	20001,
+				"iPort"			:	11001,
 				"iType"			:	LCM,
-			},
-			{
-				"iIndex"		:	2,
-				"sIP"			:	"localhost",
-				"iPort"			:	20002,
-				"iType"			:	GATE,
-			},
-			{
-				"iIndex"		:	3,
-				"sIP"			:	"localhost",
-				"iPort"			:	20003,
-				"iType"			:	GPS,
-			},
-			{
-				"iIndex"		:	4,
-				"sIP"			:	"localhost",
-				"iPort"			:	20004,
-				"iType"			:	DBS,
-			},
-			{
-				"iIndex"		:	5,
-				"sIP"			:	"localhost",
-				"iPort"			:	20005,
-				"iType"			:	LGS,
 			},
 		],
 	},
@@ -177,6 +218,16 @@ def Init(iServerID, iIndex):
 	LOCAL_SERVERNUM = iServerID
 	LOCAL_SERVERNAME = sName
 	LOCAL_SERVERCONFIG = dConfig
+	SetCMDTitle(sName, iServerID, dConfig)
+
+def SetCMDTitle(sName, iServerID, dConfig):
+	# import os
+	# os.system("title %s:%s %s_%s"%(sName, iServerID, TYPE2NAME[dConfig["iType"]], dConfig["iIndex"]))
+	import ctypes
+	ctypes.windll.kernel32.SetConsoleTitleW("%s:%s %s_%s"%(sName, iServerID, TYPE2NAME[dConfig["iType"]], dConfig["iIndex"]))
+
+def GetCurProcessIPAndPort():
+	return LOCAL_SERVERCONFIG["sIP"], LOCAL_SERVERCONFIG["iPort"]
 
 def GetCurProcessType():
 	return LOCAL_SERVERCONFIG["iType"]

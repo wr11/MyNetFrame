@@ -2,7 +2,7 @@
 
 from operator import index
 from pubdefines import CSERVER_PORT, MSGQUEUE_SEND, MSGQUEUE_RECV, DELAY_TIME, CallManagerFunc, C2S, S2S, SSERVER_PORT, SELF
-from protocol import S2C_CONNECT, SELF_LOCALMAP, SS_IDENTIFY
+from protocol import S2C_CONNECT, MQ_LOCALMAKEROUTE, SS_IDENTIFY, MQ_DISCONNECT, MQ_DATARECEIVED
 from net.netpackage import *
 
 import twisted
@@ -13,10 +13,8 @@ import mq
 import net.link as link
 import conf
 
-if "g_ConnectLink" not in globals():
-	g_ConnectLink = []
-if "g_AcceptLink" not in globals():
-	g_AcceptLink = []
+if "g_Connect" not in globals():
+	g_Connect = {}
 
 #-------------主动连接(作为客户端连接其他服务器)实例---------------
 class DeferClient(twisted.internet.protocol.Protocol):
@@ -26,33 +24,44 @@ class DeferClient(twisted.internet.protocol.Protocol):
 		self.m_Index = args[1]
 
 	def connectionMade(self):
-		global g_ConnectLink
-		if self not in g_ConnectLink:
-			g_ConnectLink.append(self)
-		else:
-			raise Exception("Net Error: link %d repeat"%(g_ConnectLink.index(self)))
-		iID = g_ConnectLink.index(self)
-		print("主动连接%s 已建立网络层连接"%iID)
-		if not timer.GetTimer("SendMq_Handler"):
-			timer.Call_out(DELAY_TIME, "SendMq_Handler", SendMq_Handler)
+		global g_Connect
+		sHost = self.transport.getPeer().host
+		iPort = self.transport.getPeer().port
+		tFlag = (sHost, iPort)
+		if (tFlag not in g_Connect.keys()) or (tFlag in g_Connect.keys() and not g_Connect[tFlag].connected):
+			g_Connect[tFlag] = self
+			print("主动连接%s %s 已建立网络层连接"%tFlag)
+			if not timer.GetTimer("SendMq_Handler"):
+				timer.Call_out(DELAY_TIME, "SendMq_Handler", SendMq_Handler)
 
-		PutData((SELF, SELF_LOCALMAP, (self.m_ServerID, self.m_Index)))
-		S2SIdentify(self, self.m_ServerID, self.m_Index)
+			PutData((MQ_LOCALMAKEROUTE, (sHost, iPort, self.m_ServerID, self.m_Index)))
+		else:
+			self.transport.loseConnection()
 
 	def dataReceived(self, data):
-		iID = g_ConnectLink.index(self)
-		PutData((C2S, iID, data))
-		print("网络层接收到数据，并已加入消息队列")
+		# sHost = self.transport.getPeer().host
+		# iPort = self.transport.getPeer().port
+		# tFlag = (sHost, iPort)
+		# PutData((C2S, tFlag, data))
+		# print("网络层接收到数据，并已加入消息队列")
+		sHost = self.transport.getPeer().host
+		iPort = self.transport.getPeer().port
+		tFlag = (sHost, iPort)
+		print("数据来源错误%s %s"%tFlag)
 
 	def connectionLost(self, reason):
-		global g_ConnectLink
-		print("与服务器断开连接")
-		iID = 0
-		if self in g_ConnectLink:
-			iID = g_ConnectLink.index(self)
-			g_ConnectLink.remove(self)
+		global g_Connect
+		print("网络层与服务器断开连接")
+		sHost = self.transport.getPeer().host
+		iPort = self.transport.getPeer().port
+		tFlag = (sHost, iPort)
+		if tFlag in g_Connect:
+			del g_Connect[tFlag]
 
-		PutData((SELF, iID, "connecteddisconnect"))
+		iServer = self.m_ServerID
+		iIndex = self.m_Index
+		tFlag1 = (iServer, iIndex)
+		PutData((MQ_DISCONNECT, tFlag1))
 
 class DefaultClientFactory(twisted.internet.protocol.ReconnectingClientFactory):
 	protocol = DeferClient
@@ -71,35 +80,43 @@ class DefaultClientFactory(twisted.internet.protocol.ReconnectingClientFactory):
 #--------------接受连接(作为服务器接受其他客户端的连接)实例---------------
 class CServer(twisted.internet.protocol.Protocol):
 	def connectionMade(self):
-		global g_AcceptLink
-		if self not in g_AcceptLink:
-			g_AcceptLink.append(self)
-		else:
-			raise Exception("Net Error: link %d repeat"%(g_AcceptLink.index(self)))
-		iID = g_AcceptLink.index(self)
-		print("主动连接%s 已建立网络层连接"%iID)
-		if not timer.GetTimer("SendMq_Handler"):
-			timer.Call_out(DELAY_TIME, "SendMq_Handler", SendMq_Handler)
+		# global g_Connect
+		# sHost = self.transport.getPeer().host
+		# iPort = self.transport.getPeer().port
+		# tFlag = (sHost, iPort)
+		# if tFlag not in g_Connect.keys():
+		# 	g_Connect[tFlag] = self
+		# 	print("接收连接%s %s 已建立网络层连接"%tFlag)
+		# 	if not timer.GetTimer("SendMq_Handler"):
+		# 		timer.Call_out(DELAY_TIME, "SendMq_Handler", SendMq_Handler)
+		# else:
+		# 	self.transport.loseConnection()
+		pass
 
 	def connectionLost(self, reason):
-		global g_AcceptLink
-		print("与服务器断开连接")
-		iID = 0
-		if self in g_AcceptLink:
-			iID = g_ConnectLink.index(self)
-			g_AcceptLink.remove(self)
+		# global g_Connect
+		# print("与服务器断开连接")
+		# sHost = self.transport.getPeer().host
+		# iPort = self.transport.getPeer().port
+		# tFlag = (sHost, iPort)
+		# if tFlag in g_Connect:
+		# 	del g_Connect[tFlag]
 
-		PutData((SELF, iID, "accepteddisconnect"))
+		# PutData((SELF, MQ_DISCONNECT, tFlag))
+		pass
+
 
 	def dataReceived(self, data):
-		iID = g_ConnectLink.index(self)
-		PutData((S2S, iID, data))
-		print("【C2S】收到客户端数据，并已加入消息队列")
+		sHost = self.transport.getPeer().host
+		iPort = self.transport.getPeer().port
+		tFlag = (sHost, iPort)
+		PutData(MQ_DATARECEIVED, data)
 
 class CBaseServerFactory(twisted.internet.protocol.Factory):
 	protocol = CServer
 
 def run(oSendMq, oRecvMq, oConfInitFunc):
+	global g_Connect
 	oConfInitFunc()
 	link.Init()
 
@@ -112,9 +129,13 @@ def run(oSendMq, oRecvMq, oConfInitFunc):
 		sIP = dConfig["sIP"]
 		iPort = dConfig["iPort"]
 		index = dConfig["iIndex"]
-		twisted.internet.reactor.connectTCP(sIP, iPort, DefaultClientFactory())
+		tFlag = (sIP, iPort)
+		if tFlag in g_Connect:
+			continue
+		twisted.internet.reactor.connectTCP(sIP, iPort, DefaultClientFactory(iServerID, index))
 	# twisted.internet.reactor.listenTCP(CSERVER_PORT, CBaseServerFactory())
-	twisted.internet.reactor.listenTCP(SSERVER_PORT, CBaseServerFactory())
+	sMyIP, iMyPort = conf.GetCurProcessIPAndPort()
+	twisted.internet.reactor.listenTCP(iMyPort, CBaseServerFactory())
 	print("服务端启动完毕，等待客户端连接")
 	twisted.internet.reactor.run()
 
@@ -141,11 +162,3 @@ def PutData(data):
 			print("数据在加载")
 			return
 		oRecvMq.put(data)
-		print("网络层接收到数据，并已加入消息队列")
-
-def S2SIdentify(oProto, iServer, iIndex):
-	oPacketPrepare = PacketPrepare(SS_IDENTIFY)
-	PacketAddI(iServer, oPacketPrepare)
-	PacketAddI(iIndex, oPacketPrepare)
-	bData = oPacketPrepare.m_BytesBuffer
-	oProto.transport.getHandle().sendall(bData)

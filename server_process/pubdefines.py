@@ -11,6 +11,7 @@ VERSION = 0.1
 C2S = 1
 S2S = 2
 SELF = 3
+NET = 4
 
 #服务器地址
 SERVER_HOST = "127.0.0.1"

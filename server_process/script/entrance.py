@@ -5,6 +5,7 @@ from timer import Call_out
 import mq
 import script.netcommand as netcommand
 import script.user as user
+import script.link as link
 
 def RecvMq_Handler():
 	HANDLE_MAX = 100
@@ -15,14 +16,13 @@ def RecvMq_Handler():
 	iHandled = 0
 	while not oRecvMq.empty() and iHandled <= HANDLE_MAX:
 		tData = oRecvMq.get()
-		iType, iLink, bData = tData
-		print("从消息队列中接收到数据 %s %s %s" % (iType, iLink, bData))
-		netcommand.NetCommand(tData)
+		netcommand.MQMessage(tData)
 	Call_out(DELAY_TIME, "RecvMq_Handler", RecvMq_Handler)
 
 def run(oSendMq, oRecvMq, oConfInitFunc):
 	oConfInitFunc()
 	user.Init()
+	link.Init()
 	mq.SetMq(oSendMq, MSGQUEUE_SEND)
 	mq.SetMq(oRecvMq, MSGQUEUE_RECV)
 	Call_out(DELAY_TIME, "RecvMq_Handler", RecvMq_Handler)
