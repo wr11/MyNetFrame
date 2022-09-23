@@ -7,11 +7,9 @@ import time
 #版本信息，客户端和服务端应保持一致
 VERSION = 0.1
 
-#连接类型
-C2S = 1
-S2S = 2
-SELF = 3
-NET = 4
+#数据发送目标的角色
+CLIENT = 1
+SERVER = 0
 
 #服务器地址
 SERVER_HOST = "127.0.0.1"

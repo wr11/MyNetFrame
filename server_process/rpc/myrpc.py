@@ -215,10 +215,10 @@ class CRPC:
 		self.m_Packet._PushCallPacket((pubdefines.SERVER_NUM, sFunc, idx, args, kwargs))
 		return idx
 
-	def CallFunc(self, iLink):
+	def CallFunc(self, iServer, iIndex):
 		oPack = np.PacketPrepare(SS2S_RPCCALL)
 		np.PacketAddB(self.m_Packet.m_Data, oPack)
-		np.S2SPacketSend(iLink, oPack)
+		np.S2SPacketSend(iServer, iIndex, oPack)
 
 	def _GetCallBackIdx(self):
 		if self.m_CBIdx == -1:
@@ -274,8 +274,8 @@ class CRPCResponse:
 		oPacket._PushCallPacket((pubdefines.SERVER_NUM, self.m_CBIdx, args, kwargs))
 		oPack = np.PacketPrepare(SS2S_RPCRESPONSE)
 		np.PacketAddB(oPacket.m_Data, oPack)
-		iLink = g_ServerNum2Link.get(self.m_SourceServer, 0)
-		np.S2SPacketSend(iLink, oPack)
+		iServer, iIndex = self.m_SourceServer
+		np.S2SPacketSend(iServer, iIndex, oPack)
 
 	def RemoteExcute(self):
 		func = GetGlobalFuncByName(self.m_CallFunc)
@@ -290,23 +290,25 @@ class CRPCResponse:
 			np.S2SPacketSend(iLink, oPack)
 			raise Exception("远程调用函数执行错误")
 
-def RemoteCallFunc(iServerNum, oCallBack, sFunc, *args, **kwargs):
+def RemoteCallFunc(iServer, iIndex, oCallBack, sFunc, *args, **kwargs):
 	global g_RPCManager
-	print("【server】开始远程调用", g_ServerNum2Link)
-	oRpc = GetRpcObject(iServerNum)
-	iLink = g_ServerNum2Link.get(iServerNum, 0)
+	tFlag = (iServer, iIndex)
+	print("【server】开始远程调用")
+	oRpc = GetRpcObject(tFlag)
+	tLink = pubdefines.CallManagerFunc("link", "GetLink", tFlag[0], tFlag[1])
 	oPacket = CRPCPacket()
 	oRpc.InitCall(oCallBack, oPacket, sFunc, *args, **kwargs)
-	oRpc.CallFunc(iLink)
+	oRpc.CallFunc(tLink[0], tLink[1])
  
-def GetRpcObject(iServerNum):
+def GetRpcObject(tFlag):
 	global g_RPCManager
-	iLink = g_ServerNum2Link.get(iServerNum, 0)
-	if not iLink:
-		raise Exception("服务器%s未建立连接" % iServerNum)
-	if iServerNum not in g_RPCManager:
-		g_RPCManager[iServerNum] = CRPC()
-	return g_RPCManager[iServerNum]
+	tLink = pubdefines.CallManagerFunc("link", "GetLink", tFlag[0], tFlag[1])
+	if not tLink:
+		print("WARNING: RPC %s %s not connected"%tFlag)
+		return
+	if tFlag not in g_RPCManager:
+		g_RPCManager[tFlag] = CRPC()
+	return g_RPCManager[tFlag]
 
 def Receive(iHeader, data):
 	oBuffer = BytesIO(data)
@@ -374,7 +376,8 @@ def AsyncRpcFunctor(oCBFunc):
 def AsyncRemoteCallFunc(iServer, sFunc, *args, **kwargs):
 	return _BaseBlockCall(iServer, sFunc, args, kwargs)
 
-def _BaseBlockCall(targetServer, sTatgetFunc, args, kwargs):
+def _BaseBlockCall(iServer, iIndex, sTatgetFunc, args, kwargs):
+	tFlag = (iServer, iIndex)
 	def _func(result):
 		if not result.IsError():
 			oFuture.set_result(result.GetData())
@@ -389,11 +392,11 @@ def _BaseBlockCall(targetServer, sTatgetFunc, args, kwargs):
 	iTimeOut = kwargs.pop("_timeout", None)
 	if iTimeOut:
 		cb.SetTimeout(iTimeOut)
-	oRpc = GetRpcObject(targetServer)
-	iLink = g_ServerNum2Link.get(targetServer, 0)
+	oRpc = GetRpcObject(tFlag)
+	tLink = pubdefines.CallManagerFunc("link", "GetLink", tFlag[0], tFlag[1])
 	oPacket = CRPCPacket()
 	oRpc.InitCall(cb, oPacket, sTatgetFunc, *args, **kwargs)
-	oRpc.CallFunc(iLink)
+	oRpc.CallFunc(tLink)
 
 class RpcException(Exception):
 	pass

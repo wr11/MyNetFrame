@@ -45,6 +45,12 @@ def ParseMQMessage(iMQHeader, data):
 		iServer, iIndex = data
 		CallManagerFunc("link", "DelLink", iServer, iIndex)
 		print("业务层断开连接%s %s"%(iServer, iIndex))
+	elif iMQHeader == MQ_CLIENTCONNECT:
+		sHost, iPort, iConnectID = data
+		CallManagerFunc("link", "AddClientLink", sHost, iPort, iConnectID)
+	elif iMQHeader == MQ_CLIENTDISCONNECT:
+		iConnectID = data[0]
+		CallManagerFunc("link", "DelClientLink", iConnectID)
 	elif iMQHeader == MQ_DATARECEIVED:
 		NetCommand(data)
 

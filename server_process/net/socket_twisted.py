@@ -2,7 +2,7 @@
 
 from operator import index
 from pubdefines import CSERVER_PORT, MSGQUEUE_SEND, MSGQUEUE_RECV, DELAY_TIME, CallManagerFunc, C2S, S2S, SSERVER_PORT, SELF
-from protocol import S2C_CONNECT, MQ_LOCALMAKEROUTE, SS_IDENTIFY, MQ_DISCONNECT, MQ_DATARECEIVED
+from protocol import *
 from net.netpackage import *
 
 import twisted
@@ -15,6 +15,12 @@ import conf
 
 if "g_Connect" not in globals():
 	g_Connect = {}
+
+if "g_ClientConnect" not in globals():
+	g_ClientConnect = {}
+
+if "g_ClientConnectID" not in globals():
+	g_ClientConnectID = 0
 
 #-------------主动连接(作为客户端连接其他服务器)实例---------------
 class DeferClient(twisted.internet.protocol.Protocol):
@@ -115,6 +121,46 @@ class CServer(twisted.internet.protocol.Protocol):
 class CBaseServerFactory(twisted.internet.protocol.Factory):
 	protocol = CServer
 
+#--------------接受连接(作为服务器接受其他客户端的连接)实例---------------
+class CClientServer(twisted.internet.protocol.Protocol):
+	def connectionMade(self):
+		global g_ClientConnect, g_ClientConnectID
+		sHost = self.transport.getPeer().host
+		iPort = self.transport.getPeer().port
+		tFlag = (sHost, iPort)
+		if (tFlag not in g_ClientConnect.keys()) or (tFlag in g_ClientConnect.keys() and not g_ClientConnect[tFlag].connected):
+			g_ClientConnect[tFlag] = self
+			print("客户端%s %s 已建立网络层连接"%tFlag)
+			if not timer.GetTimer("SendMq_Handler"):
+				timer.Call_out(DELAY_TIME, "SendMq_Handler", SendMq_Handler)
+
+			self.m_ClientConnectID = g_ClientConnectID
+			PutData((MQ_CLIENTCONNECT, (sHost, iPort, g_ClientConnectID)))
+			g_ClientConnectID += 1
+		else:
+			self.transport.loseConnection()
+
+	def connectionLost(self, reason):
+		iConnectID = self.m_ClientConnectID
+		sHost = self.transport.getPeer().host
+		iPort = self.transport.getPeer().port
+		tFlag = (sHost, iPort)
+		if tFlag in g_ClientConnect:
+			del g_ClientConnect[tFlag]
+		
+		PutData((MQ_CLIENTDISCONNECT, (iConnectID,)))
+
+
+	def dataReceived(self, data):
+		sHost = self.transport.getPeer().host
+		iPort = self.transport.getPeer().port
+		tFlag = (sHost, iPort)
+		PutData((MQ_DATARECEIVED, data))
+
+class CClientServerFactory(twisted.internet.protocol.Factory):
+	protocol = CClientServer
+
+
 def run(oSendMq, oRecvMq, oConfInitFunc):
 	global g_Connect
 	oConfInitFunc()
@@ -140,6 +186,7 @@ def run(oSendMq, oRecvMq, oConfInitFunc):
 	twisted.internet.reactor.run()
 
 def SendMq_Handler():
+	global g_Connect
 	HANDLE_MAX = 100
 	oMq = mq.GetMq(MSGQUEUE_SEND)
 	if oMq.empty():
@@ -149,10 +196,14 @@ def SendMq_Handler():
 	while not oMq.empty() and iHandled <= HANDLE_MAX:
 		iHandled += 1
 		tData = oMq.get()
-		iType, iLink, bData = tData
-		print("消息队列数据准备发送至客户端 %s" % bData)
-		oLink = CallManagerFunc("link", "GetLink", iLink, iType)
-		oLink.m_Socket.transport.getHandle().sendall(bData)
+		sIP, iPort, bData = tData
+		print("消息队列数据准备发送至客户端 %s %s" % (sIP, iPort))
+		tFlag = (sIP, iPort)
+		oProto = g_Connect.get(tFlag, None)
+		if oProto:
+			oProto.m_Socket.transport.getHandle().sendall(bData)
+		else:
+			print("WARNING: No connect %s %s"%tFlag)
 	timer.Call_out(DELAY_TIME, "SendMq_Handler", SendMq_Handler)
 
 def PutData(data):

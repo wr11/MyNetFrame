@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from pubdefines import CallManagerFunc
+
 import struct
 import pubdefines
 import mq
@@ -62,18 +64,20 @@ def PacketSend(iLink, oNetPack):
 		if oMq.full():
 			print("网络延迟中")
 			return
-		oMq.put((pubdefines.C2S, iLink,bData))
+		tFlag = CallManagerFunc("link", "GetClientLink", iLink)
+		oMq.put((pubdefines.CLIENT, tFlag,bData))
 		print("数据 %s 已加入消息队列" % (bData))
 	del oNetPack
  
-def S2SPacketSend(iLink, oNetPack):
+def S2SPacketSend(iServer, iIndex, oNetPack):
 	oMq = mq.GetMq(pubdefines.MSGQUEUE_SEND)
 	bData = oNetPack.m_BytesBuffer
 	if oMq:
 		if oMq.full():
 			print("网络延迟中")
 			return
-		oMq.put((pubdefines.S2S, iLink,bData))
+		tFlag = CallManagerFunc("link", "GetLink", iServer, iIndex)
+		oMq.put((pubdefines.SERVER, tFlag,bData))
 		print("数据 %s 已加入消息队列" % (bData))
 	del oNetPack
 
