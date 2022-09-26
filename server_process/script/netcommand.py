@@ -5,7 +5,7 @@ from pubdefines import CallManagerFunc
 import script.login.net as ln
 import netpackage as np
 
-RPC_PROTOCOL = [SS2S_RPCRESPONSE, SS2S_RPCCALL, SS2S_RESPONSEERR]
+RPC_PROTOCOL = [SS_RPCRESPONSE, SS_RPCCALL, SS_RESPONSEERR]
 
 if "g_ServerNum2Link" not in globals():
 	g_ServerNum2Link = {}
@@ -13,7 +13,7 @@ if "g_ServerNum2Link" not in globals():
 class CNetCommand:
 	def __init__(self):
 		self.m_Map = {
-			C2S_CONNECT: ln.NetCommand,
+			C2S_GMORDER : ln.NetCommand
 		}
 
 	def CallCommand(self, iHeader, oNetPackage, who=None):
@@ -56,15 +56,11 @@ def ParseMQMessage(iMQHeader, data):
 def NetCommand(data):
 	oNetPackage = np.UnpackPrepare(data)
 	iDataHeader = np.UnpackI(oNetPackage)
+	PrintDebug("receive header data %s" % iDataHeader)
 	if 0x100 <= iDataHeader < 0x1000:
-		iLink = 1
-		who = CallManagerFunc("user", "GetUser", iLink)
-		if not who:
-			who = CallManagerFunc("user", "AddUser", iLink)
-		PrintDebug("receive header data %s" % iDataHeader)
-		CNetCommand().CallCommand(iDataHeader, oNetPackage, who)
-	elif iDataHeader >= 0x1000:
 		if iDataHeader in RPC_PROTOCOL:
 			import rpc.myrpc as rpc
 			data = np.UnpackEnd(oNetPackage)
 			rpc.Receive(iDataHeader, data)
+	elif iDataHeader >= 0x1000:
+		CNetCommand().CallCommand(iDataHeader, oNetPackage)

@@ -153,6 +153,7 @@ class CClientServer(twisted.internet.protocol.Protocol):
 		sHost = self.transport.getPeer().host
 		iPort = self.transport.getPeer().port
 		tFlag = (sHost, iPort)
+		PrintDebug("client data received")
 		PutData((MQ_DATARECEIVED, data))
 
 class CClientServerFactory(twisted.internet.protocol.Factory):

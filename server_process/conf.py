@@ -75,6 +75,9 @@ MCM仅与每个服的LCM通信(即LCM会上报当前服各进程状态)
 
 5.
 GPS和DBS数量应对应
+
+6.
+同一个服务器编号的不同进程应在一个字典的lstConfig中，不要分开
 '''
 # SERVER_ALLOCATE = [
 # 	#Master Cluster Manager Server
@@ -140,6 +143,39 @@ GPS和DBS数量应对应
 # 	},
 # ]
 
+# SERVER_ALLOCATE = [
+# 	#Master Cluster Manager Server
+# 	{
+# 		"iServerID" 		:	0,
+# 		"sServerName"		:	"Master Cluster Manager",
+# 		"lstProcessConfig"	:	[
+# 			{
+# 				"iIndex"		:	1,
+# 				"sIP"			:	"localhost",
+# 				"iPort"			:	10001,
+# 				"iType"			:	MCM,
+# 				"iRole"			:	LEAD,
+# 				"iConcern"		:	2,
+# 			},
+# 		],
+# 	},
+
+# 	#Logic Server1(index 为数组下标加1, iServerID为999加数组下标)
+# 	{
+# 		"iServerID" 		:	1000,
+# 		"sServerName"		:	"ServerTest",
+# 		"lstProcessConfig"	:	[
+# 			{
+# 				"iIndex"		:	1,
+# 				"sIP"			:	"localhost",
+# 				"iPort"			:	11001,
+# 				"iType"			:	GATE,
+# 				"iClientPort"	:	21001,
+# 			},
+# 		],
+# 	},
+# ]
+
 SERVER_ALLOCATE = [
 	#Master Cluster Manager Server
 	{
@@ -156,7 +192,6 @@ SERVER_ALLOCATE = [
 			},
 		],
 	},
-
 	#Logic Server1(index 为数组下标加1, iServerID为999加数组下标)
 	{
 		"iServerID" 		:	1000,
@@ -168,6 +203,12 @@ SERVER_ALLOCATE = [
 				"iPort"			:	11001,
 				"iType"			:	GATE,
 				"iClientPort"	:	21001,
+			},
+			{
+				"iIndex"		:	2,
+				"sIP"			:	"localhost",
+				"iPort"			:	11002,
+				"iType"			:	LCM,
 			},
 		],
 	},

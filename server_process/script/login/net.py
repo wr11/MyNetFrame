@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
-from protocol import S2C_CONNECT
 from myutil.mycorotine import coroutine
 
 import netpackage as np
 
 def NetCommand(who, oNetPackage):
 	sSub = np.UnpackS(oNetPackage)
-	PrintDebug("【服务端】数据接收完毕 %s" % sSub)
-	Handle(who, sSub)
+	PrintDebug("the received data is %s" % sSub)
+	# Handle(who, sSub)
 
 def Handle(who, sSub):
-	GetDataFromDs2(sSub)
+	GetDataFromDs(sSub)
 
 def GetDataFromDs(sSub):
 	import rpc

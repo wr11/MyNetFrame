@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
 from pubdefines import MSGQUEUE_SEND, MSGQUEUE_RECV, CallManagerFunc, DELAY_TIME
+from protocol import C2S_GMORDER
 
 import net.clientnetpack as clientnetpack
 import sys
@@ -18,7 +19,7 @@ class CClientUI(QtWidgets.QDialog):
 
 	def sendmsg(self):
 		text = self.lineedit.text()
-		oSend = clientnetpack.PacketPrepare(0x02)
+		oSend = clientnetpack.PacketPrepare(C2S_GMORDER)
 		clientnetpack.PacketAddS(text, oSend)
 		clientnetpack.PacketSend(oSend)
 

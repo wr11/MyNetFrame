@@ -217,7 +217,7 @@ class CRPC:
 		return idx
 
 	def CallFunc(self, iServer, iIndex):
-		oPack = np.PacketPrepare(SS2S_RPCCALL)
+		oPack = np.PacketPrepare(SS_RPCCALL)
 		np.PacketAddB(self.m_Packet.m_Data, oPack)
 		np.S2SPacketSend(iServer, iIndex, oPack)
 
@@ -274,7 +274,7 @@ class CRPCResponse:
 		oPacket = CRPCPacket()
 		iCurServer, iCurProcessIndex = conf.GetServerNum(), conf.GetProcessIndex()
 		oPacket._PushCallPacket((iCurServer, iCurProcessIndex, self.m_CBIdx, args, kwargs))
-		oPack = np.PacketPrepare(SS2S_RPCRESPONSE)
+		oPack = np.PacketPrepare(SS_RPCRESPONSE)
 		np.PacketAddB(oPacket.m_Data, oPack)
 		np.S2SPacketSend(self.m_SourceServer[0], self.m_SourceServer[1], oPack)
 
@@ -285,7 +285,7 @@ class CRPCResponse:
 		except:
 			oPacket = CRPCPacket()
 			oPacket._PushCallPacket((pubdefines.SERVER_NUM, self.m_CBIdx))
-			oPack = np.PacketPrepare(SS2S_RESPONSEERR)
+			oPack = np.PacketPrepare(SS_RESPONSEERR)
 			np.PacketAddB(oPacket.m_Data, oPack)
 			iLink = g_ServerNum2Link.get(self.m_SourceServer, 0)
 			np.S2SPacketSend(iLink, oPack)
@@ -315,12 +315,12 @@ def Receive(iHeader, data):
 	unpacker = msgpack.Unpacker(oBuffer, raw=False)
 	lstInfo = [unpacked for unpacked in unpacker]
 	PrintDebug("rpc remote receive %s"%str(lstInfo))
-	if iHeader == SS2S_RPCCALL:
+	if iHeader == SS_RPCCALL:
 		oResponse = CRPCResponse(lstInfo)
 		oResponse.RemoteExcute()
-	elif iHeader == SS2S_RPCRESPONSE:
+	elif iHeader == SS_RPCRESPONSE:
 		_OnResponse(lstInfo)
-	elif iHeader == SS2S_RESPONSEERR:
+	elif iHeader == SS_RESPONSEERR:
 		_OnResponseErr(lstInfo)
   
 def _OnResponseErr(lstInfo):
@@ -358,6 +358,8 @@ def RpcFunctor(oCBFunc, oTimeoutFunc, *args, **kwargs):
 def RpcOnlyCBFunctor(oCBFunc, *args, **kwargs):
 	return CCallBackFunctor(oCBFunc, None, args, kwargs)
 
+
+#-------------------corotine-----------------
 def AsyncRpcFunctor(oCBFunc):
 	return CCallBackFunctor2(oCBFunc)
 
