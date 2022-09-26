@@ -65,7 +65,7 @@ def PacketSend(iLink, oNetPack):
 			print("网络延迟中")
 			return
 		tFlag = CallManagerFunc("link", "GetClientLink", iLink)
-		oMq.put((pubdefines.CLIENT, tFlag,bData))
+		oMq.put((pubdefines.CLIENT, tFlag, bData))
 		print("数据 %s 已加入消息队列" % (bData))
 	del oNetPack
  
@@ -77,7 +77,7 @@ def S2SPacketSend(iServer, iIndex, oNetPack):
 			print("网络延迟中")
 			return
 		tFlag = CallManagerFunc("link", "GetLink", iServer, iIndex)
-		oMq.put((pubdefines.SERVER, tFlag,bData))
+		oMq.put((pubdefines.SERVER, tFlag, bData))
 		print("数据 %s 已加入消息队列" % (bData))
 	del oNetPack
 

@@ -6,15 +6,16 @@ import mq
 import script.netcommand as netcommand
 import script.user as user
 import script.link as link
+import conf
 
 def RecvMq_Handler():
-	HANDLE_MAX = 100
+	iMax = conf.GetMaxReceiveNum()
 	oRecvMq = mq.GetMq(MSGQUEUE_RECV)
 	if oRecvMq.empty():
 		Call_out(DELAY_TIME, "RecvMq_Handler", RecvMq_Handler)
 		return
 	iHandled = 0
-	while not oRecvMq.empty() and iHandled <= HANDLE_MAX:
+	while not oRecvMq.empty() and iHandled <= iMax:
 		tData = oRecvMq.get()
 		netcommand.MQMessage(tData)
 	Call_out(DELAY_TIME, "RecvMq_Handler", RecvMq_Handler)

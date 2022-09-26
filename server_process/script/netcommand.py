@@ -3,7 +3,7 @@ from protocol import *
 from pubdefines import C2S, S2S, CallManagerFunc, SERVER_NUM, SELF
 
 import script.login.net as ln
-import net.netpackage as np
+import netpackage as np
 
 RPC_PROTOCOL = [SS2S_RPCRESPONSE, SS2S_RPCCALL, SS2S_RESPONSEERR]
 

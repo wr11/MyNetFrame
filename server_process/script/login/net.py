@@ -2,7 +2,7 @@
 from protocol import S2C_CONNECT
 from myutil.mycorotine import coroutine
 
-import net.netpackage as np
+import netpackage as np
 
 def NetCommand(who, oNetPackage):
 	sSub = np.UnpackS(oNetPackage)

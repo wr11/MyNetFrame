@@ -4,6 +4,7 @@ from unittest import result
 from script.netcommand import g_ServerNum2Link
 from protocol import *
 from pubtool import CTimeOutManager
+from server_process.pubdefines import CallManagerFunc
 from timer import *
 from myutil.mycorotine import Future
 
@@ -14,7 +15,8 @@ import random
 import msgpack
 import traceback
 import importlib
-import net.netpackage as np
+import netpackage as np
+import conf
 
 if "_g_FuncCache" not in globals():
 	_g_FuncCache = {}
@@ -212,7 +214,8 @@ class CRPC:
 		if oCallBack:
 			idx = self._GetCallBackIdx()
 			self._AddCallBack(idx, oCallBack)
-		self.m_Packet._PushCallPacket((pubdefines.SERVER_NUM, sFunc, idx, args, kwargs))
+		iServer, iIndex = conf.GetServerNum(), conf.GetProcessIndex()
+		self.m_Packet._PushCallPacket((iServer, iIndex, sFunc, idx, args, kwargs))
 		return idx
 
 	def CallFunc(self, iServer, iIndex):
@@ -253,11 +256,11 @@ class CRPCPacket:
 class CRPCResponse:
 	def __init__(self, lstInfo):
 		self.m_Called = 0
-		self.m_SourceServer = lstInfo[0]
-		self.m_CallFunc = lstInfo[1]
-		self.m_CBIdx = lstInfo[2]
-		self.m_Args = lstInfo[3]
-		self.m_Kwargs = lstInfo[4]
+		self.m_SourceServer = (lstInfo[0], lstInfo[1])
+		self.m_CallFunc = lstInfo[2]
+		self.m_CBIdx = lstInfo[3]
+		self.m_Args = lstInfo[4]
+		self.m_Kwargs = lstInfo[5]
 
 	def __repr__(self) -> str:
 		return "< CRPCResponse ss:%s func:%s CB:%s args:%s kwargs%s>"% \
@@ -271,11 +274,11 @@ class CRPCResponse:
 			return
 		self.m_Called = 1
 		oPacket = CRPCPacket()
-		oPacket._PushCallPacket((pubdefines.SERVER_NUM, self.m_CBIdx, args, kwargs))
+		iCurServer, iCurProcessIndex = conf.GetServerNum(), conf.GetProcessIndex()
+		oPacket._PushCallPacket((iCurServer, iCurProcessIndex, self.m_CBIdx, args, kwargs))
 		oPack = np.PacketPrepare(SS2S_RPCRESPONSE)
 		np.PacketAddB(oPacket.m_Data, oPack)
-		iServer, iIndex = self.m_SourceServer
-		np.S2SPacketSend(iServer, iIndex, oPack)
+		np.S2SPacketSend(self.m_SourceServer[0], self.m_SourceServer[1], oPack)
 
 	def RemoteExcute(self):
 		func = GetGlobalFuncByName(self.m_CallFunc)
@@ -291,7 +294,6 @@ class CRPCResponse:
 			raise Exception("远程调用函数执行错误")
 
 def RemoteCallFunc(iServer, iIndex, oCallBack, sFunc, *args, **kwargs):
-	global g_RPCManager
 	tFlag = (iServer, iIndex)
 	print("【server】开始远程调用")
 	oRpc = GetRpcObject(tFlag)
@@ -337,32 +339,20 @@ def _OnResponseErr(lstInfo):
 
 def _OnResponse(lstInfo):
 	global g_RPCManager
-	oRpc = g_RPCManager.get(lstInfo[0], 0)
+	tFlag = (lstInfo[0], lstInfo[1])
+	oRpc = g_RPCManager.get(tFlag, 0)
 	if not oRpc:
-		print("rpc对象已移除%s"%lstInfo[0])
+		print("rpc对象已移除%s %s"%tFlag)
 		return
-	oCallBack = oRpc.m_CallBackBuff.Get(lstInfo[1])
+	oCallBack = oRpc.m_CallBackBuff.Get(lstInfo[2])
 	if not oCallBack:
-		print("rpc回调对象已移除%s"%lstInfo[1])
+		print("rpc回调对象已移除%s"%lstInfo[2])
 		return
-	oCallBack.ExecCallBack(lstInfo[2], lstInfo[3])
-	oRpc.m_CallBackBuff.Pop(lstInfo[1])
+	oCallBack.ExecCallBack(lstInfo[3], lstInfo[4])
+	oRpc.m_CallBackBuff.Pop(lstInfo[2])
 	if oRpc.m_CallBackBuff.IsEmpty():
 		del oRpc
-		del g_RPCManager[lstInfo[0]]
-
-def RemoveRpcByLink(iLink):
-	global g_RPCManager
-	iNum = 0
-	for k,v in g_ServerNum2Link.items():
-		if iLink == v:
-			iNum = k
-			break
-	if not iNum:
-		return
-	del g_ServerNum2Link[iNum]
-	if iNum in g_RPCManager:
-		del g_RPCManager[iNum]
+		del g_RPCManager[tFlag]
  
 def RpcFunctor(oCBFunc, oTimeoutFunc, *args, **kwargs):
 	return CCallBackFunctor(oCBFunc, oTimeoutFunc, args, kwargs)
@@ -396,7 +386,7 @@ def _BaseBlockCall(iServer, iIndex, sTatgetFunc, args, kwargs):
 	tLink = pubdefines.CallManagerFunc("link", "GetLink", tFlag[0], tFlag[1])
 	oPacket = CRPCPacket()
 	oRpc.InitCall(cb, oPacket, sTatgetFunc, *args, **kwargs)
-	oRpc.CallFunc(tLink)
+	oRpc.CallFunc(tLink[0], tLink[1])
 
 class RpcException(Exception):
 	pass

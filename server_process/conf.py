@@ -34,6 +34,9 @@ NORMAL = 3
 SERVER_CONF = {
 	"run_attr":{
 		"bDebug" : True,
+		"iMaxSendNum" : 100,
+		"iMaxReceiveNum" : 100,
+		"iInterval" : 0.1,
 	},
 	"mysql" : {
 		"bIsOn":True,
@@ -164,7 +167,8 @@ SERVER_ALLOCATE = [
 				"iIndex"		:	1,
 				"sIP"			:	"localhost",
 				"iPort"			:	11001,
-				"iType"			:	LCM,
+				"iType"			:	GATE,
+				"iClientPort"	:	21001,
 			},
 		],
 	},
@@ -185,11 +189,54 @@ def IsDebug():
 def IsRedisOn():
 	return SERVER_CONF["redis"]["bIsOn"]
 
+def GetInterval():
+	return SERVER_CONF["run_attr"]["iInterval"]
+
+def GetMaxSendNum():
+	return SERVER_CONF["run_attr"]["iMaxSendNum"]
+
+def GetMaxReceiveNum():
+	return SERVER_CONF["run_attr"]["iMaxReceiveNum"]
+
 def GetRedisConfig():
 	return SERVER_CONF["redis"]["config"]
 
 def GetMysqlConfig():
 	return SERVER_CONF["mysql"]
+
+def GetCurProcessIPAndPort():
+	return LOCAL_SERVERCONFIG["sIP"], LOCAL_SERVERCONFIG["iPort"]
+
+def GetCurProcessType():
+	return LOCAL_SERVERCONFIG["iType"]
+
+def GetServerNum():
+	return LOCAL_SERVERNUM
+
+def GetProcessIndex():
+	return LOCAL_SERVERCONFIG["iIndex"]
+
+def GetClientPort():
+	assert IsGate(), "server do not have client port except GATE, the current is %s"%TYPE2NAME(GetCurProcessType())
+	return LOCAL_SERVERCONFIG["iClientPort"]
+
+def IsGate():
+	return LOCAL_SERVERCONFIG["iType"] == GATE
+
+def IsLCM():
+	return LOCAL_SERVERCONFIG["iType"] == LCM
+
+def IsLGS():
+	return LOCAL_SERVERCONFIG["iType"] == LGS
+
+def IsGPS():
+	return LOCAL_SERVERCONFIG["iType"] == GPS
+
+def IsDBS():
+	return LOCAL_SERVERCONFIG["iType"] == DBS
+
+def IsMCM():
+	return LOCAL_SERVERCONFIG["iType"] == MCM
 
 #@CacheResult()
 def GetServerConfig(iServerID, iIndex):
@@ -225,12 +272,6 @@ def SetCMDTitle(sName, iServerID, dConfig):
 	# os.system("title %s:%s %s_%s"%(sName, iServerID, TYPE2NAME[dConfig["iType"]], dConfig["iIndex"]))
 	import ctypes
 	ctypes.windll.kernel32.SetConsoleTitleW("%s:%s %s_%s"%(sName, iServerID, TYPE2NAME[dConfig["iType"]], dConfig["iIndex"]))
-
-def GetCurProcessIPAndPort():
-	return LOCAL_SERVERCONFIG["sIP"], LOCAL_SERVERCONFIG["iPort"]
-
-def GetCurProcessType():
-	return LOCAL_SERVERCONFIG["iType"]
 
 def GetConnects():
 	global LOCAL_SERVERNUM, LOCAL_SERVERCONFIG
