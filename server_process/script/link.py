@@ -17,7 +17,7 @@ class CLinkManager:
 		if tFlag not in self.m_LinkDict:
 			self.m_LinkDict[tFlag] = (sHost, iPort)
 		else:
-			print("WARNING: link repeated %s %s %s %s"%(sHost, iPort, iServer, iIndex))
+			PrintWarning("link repeated %s %s %s %s"%(sHost, iPort, iServer, iIndex))
 
 	def DelLink(self, iServer, iIndex):
 		tFlag = (iServer, iIndex)
@@ -32,7 +32,7 @@ class CLinkManager:
 		if iConnectID not in self.m_ClientLink:
 			self.m_ClientLink[iConnectID] = (sIP, iPort)
 		else:
-			print("WARNING: clientlink repeated %s %s"%(sIP, iPort))
+			PrintWarning("clientlink repeated %s %s"%(sIP, iPort))
 
 	def GetClientLink(self, iConnectID):
 		return self.m_ClientLink.get(iConnectID, ())

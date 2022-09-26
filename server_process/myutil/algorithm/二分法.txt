@@ -18,7 +18,7 @@ if __name__=='__main__':
 	lstTest=[1,2,3,4,5,6,7,8,9]
 	iNum=10
 	if SearchBinary(lstTest,iNum)==None:
-		print("Not Found")
+		PrintDebug("Not Found")
 	else:
-		print(SearchBinary(lstTest,iNum))
+		PrintDebug(SearchBinary(lstTest,iNum))
 	

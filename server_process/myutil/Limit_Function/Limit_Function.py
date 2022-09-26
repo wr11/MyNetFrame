@@ -16,8 +16,8 @@ class _LimitFunction(object):
 	@staticmethod
 	def Limit():
 		modulename = __name__
-		print("modluname")
-		print(modulename)
+		PrintDebug("modluname")
+		PrintDebug(modulename)
 		def func1(func):
 			if modulename not in LIMIT_REGION:
 				raise LimitFuncError("LimitFunction illegal use: wrong modulename!")
@@ -31,7 +31,7 @@ sys.modules[__name__] = _LimitFunction()
 #test:
 @_LimitFunction.Limit()
 def A():
-	print("A is called")
+	PrintDebug("A is called")
 
 limitfunction = _LimitFunction()
 limitfunction.a = A

@@ -16,11 +16,11 @@ class CUser:
 		self.m_Link = iLink
 
 	def Load(self):
-		print("加载用户数据。。。。")
+		PrintDebug("load user data ...")
 		time.sleep(3)
   
 	def Quit(self):
-		print("准备下线")
+		PrintDebug("ready get off line")
 
 class CUserManager:
 	def __init__(self):

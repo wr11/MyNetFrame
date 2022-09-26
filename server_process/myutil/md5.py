@@ -13,11 +13,11 @@ def Shuffle(lst, iSeed):
 	assert iSeed
 	random.seed(iSeed)
 	random.shuffle(lst)
-	print(f"Shuffle Res:{list(i[1] for i in lst)}")
+	PrintDebug(f"Shuffle Res:{list(i[1] for i in lst)}")
 
 if __name__ == "__main__":
 	lstMember = [(51872,"蛋仔"),(93903,"瑜瑾")]
 	lstSeed = ["56","5896512"]
 	iSeed = GenerateSeed(lstSeed)
-	print(iSeed)
+	PrintDebug(iSeed)
 	Shuffle(lstMember, iSeed)

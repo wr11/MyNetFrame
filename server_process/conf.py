@@ -222,6 +222,9 @@ def GetClientPort():
 	assert IsGate(), "server do not have client port except GATE, the current is %s"%TYPE2NAME(GetCurProcessType())
 	return LOCAL_SERVERCONFIG["iClientPort"]
 
+def GetProcessName():
+	return TYPE2NAME[LOCAL_SERVERCONFIG["iType"]]
+
 def IsGate():
 	return LOCAL_SERVERCONFIG["iType"] == GATE
 

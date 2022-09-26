@@ -7,6 +7,7 @@ import script.netcommand as netcommand
 import script.user as user
 import script.link as link
 import conf
+import mylog
 
 def RecvMq_Handler():
 	iMax = conf.GetMaxReceiveNum()
@@ -22,6 +23,7 @@ def RecvMq_Handler():
 
 def run(oSendMq, oRecvMq, oConfInitFunc):
 	oConfInitFunc()
+	mylog.Init("SRC")
 	user.Init()
 	link.Init()
 	mq.SetMq(oSendMq, MSGQUEUE_SEND)

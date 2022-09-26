@@ -39,11 +39,11 @@ def ParseMQMessage(iMQHeader, data):
 	if iMQHeader == MQ_LOCALMAKEROUTE:
 		sHost, iPort, iServer, iIndex = data
 		CallManagerFunc("link", "AddLink", sHost, iPort, iServer, iIndex)
-		print("业务层建立连接%s %s %s %s"%(sHost, iPort, iServer, iIndex))
+		PrintDebug("scr connected %s %s %s %s"%(sHost, iPort, iServer, iIndex))
 	elif iMQHeader == MQ_DISCONNECT:
 		iServer, iIndex = data
 		CallManagerFunc("link", "DelLink", iServer, iIndex)
-		print("业务层断开连接%s %s"%(iServer, iIndex))
+		PrintDebug("scr disconnected%s %s"%(iServer, iIndex))
 	elif iMQHeader == MQ_CLIENTCONNECT:
 		sHost, iPort, iConnectID = data
 		CallManagerFunc("link", "AddClientLink", sHost, iPort, iConnectID)
@@ -61,7 +61,7 @@ def NetCommand(data):
 		who = CallManagerFunc("user", "GetUser", iLink)
 		if not who:
 			who = CallManagerFunc("user", "AddUser", iLink)
-		print("【服务端】接收头部数据 %s" % iDataHeader)
+		PrintDebug("receive header data %s" % iDataHeader)
 		CNetCommand().CallCommand(iDataHeader, oNetPackage, who)
 	elif iDataHeader >= 0x1000:
 		if iDataHeader in RPC_PROTOCOL:

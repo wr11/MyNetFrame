@@ -1,7 +1,7 @@
 def MaoPao(lstSort,iNum):
 	for i in range(iNum):
 		for j in range(i,iNum):
-			print(lstSort)
+			PrintDebug(lstSort)
 			if lstSort[i]>lstSort[j]:
 				lstSort[i],lstSort[j]=lstSort[j],lstSort[i]
 			else:
@@ -9,4 +9,4 @@ def MaoPao(lstSort,iNum):
 				
 lstSort=[6,5,9,4,3,1,2]
 MaoPao(lstSort,len(lstSort))
-print(lstSort)
+PrintDebug(lstSort)

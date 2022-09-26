@@ -32,7 +32,7 @@ def CacheResult(max_size = 1000):
 			if cur_size <= maxsize:
 				cache[key] = result
 			else:
-				print("cache overflow")
+				PrintDebug("cache overflow")
 			return result
 		
 		return wrapper

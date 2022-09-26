@@ -31,7 +31,7 @@ def SetGlobalManager(sFlag, oManager, bLimitReplace = True):
 
 	oOld = g_GloabalManagerDict.get(sFlag, None)
 	if oOld and g_GManagerLimit.get(sFlag, True):
-		print("全局管理类 %s 被 %s 替换" % (oOld, oManager))
+		PrintError("全局管理类 %s 被 %s 替换" % (oOld, oManager))
 
 	g_GloabalManagerDict[sFlag] = oManager
 	g_GManagerLimit[sFlag] = bLimitReplace
@@ -66,7 +66,7 @@ def CallManagerFunc(sFlag, sFunc, *args, **kwargs):
 def GetManagerFunc(sFlag, sFunc):
 	oManager = GetGlobalManager(sFlag)
 	if not oManager:
-		print("无此全局对象 %s" % sFlag)
+		PrintError("无此全局对象 %s" % sFlag)
 		return None
 	func = getattr(oManager, sFunc, None)
 	return func

@@ -69,7 +69,7 @@ class Future(object):
 			try:
 				cb(self)
 			except Exception as e:
-				print(e)
+				PrintDebug(e)
 		self._callbacks = None
   
 	def set_exc_info(self, exc_info):
@@ -142,7 +142,7 @@ def coroutine(func):
 		except (Return, StopIteration) as e:
 			result = getattr(e, "value", None)
 		except Exception as e:
-			print(e)
+			PrintDebug(e)
 			future.set_exc_info(e)
 			return future
 		else:
@@ -152,7 +152,7 @@ def coroutine(func):
 				except (Return, StopIteration) as e:
 					future.set_result(getattr(e, "value", None))
 				except Exception as e:
-					print(e)
+					PrintDebug(e)
 					future.set_exc_info(e)
 				else:
 					Runner(result, future, yielded)

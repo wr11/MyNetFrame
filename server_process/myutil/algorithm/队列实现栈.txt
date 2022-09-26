@@ -4,7 +4,7 @@ class CStack:
 		self.queue2=[]
 	
 	def Print(self):
-		print(self.queue2+self.queue1)
+		PrintDebug(self.queue2+self.queue1)
 		
 	def NewPush(self,x):
 		if len(self.queue1)==0 and len(self.queue2)==0:
@@ -27,7 +27,7 @@ class CStack:
 				self.queue1.clear()
 				return key
 		elif len(self.queue1)==0 and len(self.queue2)==0:
-			print("已经没有元素了")
+			PrintDebug("已经没有元素了")
 		else:
 			if len(self.queue2)==1:
 				key=self.queue2[0]

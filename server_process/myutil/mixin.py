@@ -15,7 +15,7 @@ def MixinMergeClass(Class, MixinClass, bMakeLast = True, bReplaceAttr = True):
 		if attr.startswith("__"):
 			continue
 		if attr in attrList:
-			print("warning: %s.%s already exists" % (MixinClass.__name__, attr))
+			PrintWarning("warning: %s.%s already exists" % (MixinClass.__name__, attr))
 		oAttr = getattr(MixinClass, attr)
 		if type(oAttr) is types.MethodType:
 			oAttr = oAttr.im_func
@@ -27,6 +27,6 @@ def MixinGloabalFunc(Class, lstFunc):
 	for func in lstFunc:
 		sFunc = func.__name__
 		if sFunc in attrList:
-			print("warning: %s.%s already exists" % (Class.__name__, sFunc))
+			PrintWarning("warning: %s.%s already exists" % (Class.__name__, sFunc))
 		setattr(Class, sFunc, types.MethodType(func, Class))
 	return Class

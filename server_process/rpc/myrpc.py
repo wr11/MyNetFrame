@@ -91,7 +91,7 @@ class CCallBackFunctor:
 			raise Exception("rpc超时回调函数执行错误%s"%(self.m_TimeoutFunc))
 
 	def ExecErr(self):
-		print("rpc远程端报错%s"%(self.m_CBFunc))
+		PrintError("rpc remote error%s"%(self.m_CBFunc))
   
 class CCallBackFunctor2:
 	def __init__(self, oCBFunc):
@@ -266,7 +266,7 @@ class CRPCResponse:
 
 	def __call__(self, *args, **kwargs):
 		if not self.m_CBIdx:		#不需要回调
-			print("不需要回调")
+			PrintDebug("do not need callback")
 			return
 		if self.m_Called:		#不可重复回调
 			return
@@ -293,7 +293,7 @@ class CRPCResponse:
 
 def RemoteCallFunc(iServer, iIndex, oCallBack, sFunc, *args, **kwargs):
 	tFlag = (iServer, iIndex)
-	print("【server】开始远程调用")
+	PrintDebug("remote call func start ...%s %s"%(iServer, iIndex))
 	oRpc = GetRpcObject(tFlag)
 	tLink = pubdefines.CallManagerFunc("link", "GetLink", tFlag[0], tFlag[1])
 	oPacket = CRPCPacket()
@@ -304,7 +304,7 @@ def GetRpcObject(tFlag):
 	global g_RPCManager
 	tLink = pubdefines.CallManagerFunc("link", "GetLink", tFlag[0], tFlag[1])
 	if not tLink:
-		print("WARNING: RPC %s %s not connected"%tFlag)
+		PrintWarning("RPC %s %s not connected"%tFlag)
 		return
 	if tFlag not in g_RPCManager:
 		g_RPCManager[tFlag] = CRPC()
@@ -314,7 +314,7 @@ def Receive(iHeader, data):
 	oBuffer = BytesIO(data)
 	unpacker = msgpack.Unpacker(oBuffer, raw=False)
 	lstInfo = [unpacked for unpacked in unpacker]
-	print(lstInfo)
+	PrintDebug("rpc remote receive %s"%str(lstInfo))
 	if iHeader == SS2S_RPCCALL:
 		oResponse = CRPCResponse(lstInfo)
 		oResponse.RemoteExcute()
@@ -327,11 +327,11 @@ def _OnResponseErr(lstInfo):
 	global g_RPCManager
 	oRpc = g_RPCManager.get(lstInfo[0], 0)
 	if not oRpc:
-		print("rpc对象已移除%s"%lstInfo[0])
+		PrintDebug("rpc object has unload%s"%lstInfo[0])
 		return
 	oCallBack = oRpc.m_CallBackBuff.Get(lstInfo[1])
 	if not oCallBack:
-		print("rpc回调对象已移除%s"%lstInfo[1])
+		PrintDebug("rpccallback object has deleted%s"%lstInfo[1])
 		return
 	oCallBack.ExecErr()
 
@@ -340,11 +340,11 @@ def _OnResponse(lstInfo):
 	tFlag = (lstInfo[0], lstInfo[1])
 	oRpc = g_RPCManager.get(tFlag, 0)
 	if not oRpc:
-		print("rpc对象已移除%s %s"%tFlag)
+		PrintDebug("rpc object has unload%s %s"%tFlag)
 		return
 	oCallBack = oRpc.m_CallBackBuff.Get(lstInfo[2])
 	if not oCallBack:
-		print("rpc回调对象已移除%s"%lstInfo[2])
+		PrintDebug("rpccallback object has deleted%s"%lstInfo[2])
 		return
 	oCallBack.ExecCallBack(lstInfo[3], lstInfo[4])
 	oRpc.m_CallBackBuff.Pop(lstInfo[2])

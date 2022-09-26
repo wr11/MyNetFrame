@@ -30,9 +30,9 @@ def GetServerByUUID(sUUID):
 
 def Test():
 	sUUID = SUUID(4070103)
-	print(sUUID)
+	PrintDebug(sUUID)
 	iServerNo = GetServerByUUID(sUUID)
-	print(iServerNo)
+	PrintDebug(iServerNo)
 	
 if __name__ == "__main__":
 	Test()

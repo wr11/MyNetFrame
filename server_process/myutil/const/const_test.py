@@ -2,5 +2,5 @@
 
 import const
 const.DEFINE = 1
-print(const.DEFINE)
+PrintDebug(const.DEFINE)
 const.DEFINE = 3

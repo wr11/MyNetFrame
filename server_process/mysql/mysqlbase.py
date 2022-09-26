@@ -77,7 +77,7 @@ class CMysqlBase:
 		"""
 		self.CheckConfig()
 		if iType not in MYSQL_HANDLE_TYPE:
-			print("数据库操作类型错误")
+			PrintError("数据库操作类型错误")
 			return
 		with self.m_Conn.cursor() as oCursor:
 			if iType == MYSQL_MANUAL:
@@ -126,4 +126,4 @@ def main():
 	result = oTestMysql.Handler(MYSQL_SELECT, Filter = "test=124")
 	result=oTestMysql.Handler(MYSQL_MANUAL, Statement = "select id from %s"%oTestMysql.m_TblName)
 
-	print(result)
+	PrintDebug(result)

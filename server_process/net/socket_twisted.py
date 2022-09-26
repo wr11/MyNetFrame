@@ -11,6 +11,7 @@ import twisted.internet.reactor
 import timer
 import mq
 import conf
+import mylog
 
 if "g_Connect" not in globals():
 	g_Connect = {}
@@ -35,7 +36,7 @@ class DeferClient(twisted.internet.protocol.Protocol):
 		tFlag = (sHost, iPort)
 		if (tFlag not in g_Connect.keys()) or (tFlag in g_Connect.keys() and not g_Connect[tFlag].connected):
 			g_Connect[tFlag] = self
-			print("主动连接%s %s 已建立网络层连接"%tFlag)
+			PrintDebug("listen %s %s  connected"%tFlag)
 			if not timer.GetTimer("SendMq_Handler"):
 				timer.Call_out(conf.GetInterval(), "SendMq_Handler", SendMq_Handler)
 
@@ -48,15 +49,13 @@ class DeferClient(twisted.internet.protocol.Protocol):
 		# iPort = self.transport.getPeer().port
 		# tFlag = (sHost, iPort)
 		# PutData((C2S, tFlag, data))
-		# print("网络层接收到数据，并已加入消息队列")
 		sHost = self.transport.getPeer().host
 		iPort = self.transport.getPeer().port
 		tFlag = (sHost, iPort)
-		print("数据来源错误%s %s"%tFlag)
+		PrintError("wrong transform source%s %s"%tFlag)
 
 	def connectionLost(self, reason):
 		global g_Connect
-		print("网络层与服务器断开连接")
 		sHost = self.transport.getPeer().host
 		iPort = self.transport.getPeer().port
 		tFlag = (sHost, iPort)
@@ -67,6 +66,8 @@ class DeferClient(twisted.internet.protocol.Protocol):
 		iIndex = self.m_Index
 		tFlag1 = (iServer, iIndex)
 		PutData((MQ_DISCONNECT, tFlag1))
+
+		PrintDebug("disconnect %s %s %s"%(tFlag, reason))
 
 class DefaultClientFactory(twisted.internet.protocol.ReconnectingClientFactory):
 	protocol = DeferClient
@@ -91,7 +92,6 @@ class CServer(twisted.internet.protocol.Protocol):
 		# tFlag = (sHost, iPort)
 		# if tFlag not in g_Connect.keys():
 		# 	g_Connect[tFlag] = self
-		# 	print("接收连接%s %s 已建立网络层连接"%tFlag)
 		# 	if not timer.GetTimer("SendMq_Handler"):
 		# 		timer.Call_out(conf.GetInterval(), "SendMq_Handler", SendMq_Handler)
 		# else:
@@ -100,7 +100,6 @@ class CServer(twisted.internet.protocol.Protocol):
 
 	def connectionLost(self, reason):
 		# global g_Connect
-		# print("与服务器断开连接")
 		# sHost = self.transport.getPeer().host
 		# iPort = self.transport.getPeer().port
 		# tFlag = (sHost, iPort)
@@ -129,7 +128,7 @@ class CClientServer(twisted.internet.protocol.Protocol):
 		tFlag = (sHost, iPort)
 		if (tFlag not in g_ClientConnect.keys()) or (tFlag in g_ClientConnect.keys() and not g_ClientConnect[tFlag].connected):
 			g_ClientConnect[tFlag] = self
-			print("客户端%s %s 已建立网络层连接"%tFlag)
+			PrintDebug("client %s %s connected"%tFlag)
 			if not timer.GetTimer("SendMq_Handler"):
 				timer.Call_out(conf.GetInterval(), "SendMq_Handler", SendMq_Handler)
 
@@ -163,11 +162,14 @@ class CClientServerFactory(twisted.internet.protocol.Factory):
 def run(oSendMq, oRecvMq, oConfInitFunc):
 	global g_Connect
 	oConfInitFunc()
+	mylog.Init("NET")
 
 	mq.SetMq(oSendMq, MSGQUEUE_SEND)
 	mq.SetMq(oRecvMq, MSGQUEUE_RECV)
 
 	lstConfigs = conf.GetConnects()
+	lstLog = [(i[0], i[1]["iIndex"]) for i in lstConfigs]
+	PrintDebug("need connect to %s"%str(lstLog))
 	for tConfig in lstConfigs:
 		iServerID, dConfig = tConfig
 		sIP = dConfig["sIP"]
@@ -180,10 +182,11 @@ def run(oSendMq, oRecvMq, oConfInitFunc):
 	# twisted.internet.reactor.listenTCP(CSERVER_PORT, CBaseServerFactory())
 	sMyIP, iMyPort = conf.GetCurProcessIPAndPort()
 	twisted.internet.reactor.listenTCP(iMyPort, CBaseServerFactory())
+	PrintDebug("open listen port %s ..."%iMyPort)
 	if conf.IsGate():
 		iClientPort = conf.GetClientPort()
 		twisted.internet.reactor.listenTCP(iClientPort, CClientServerFactory())
-	print("服务端启动完毕，等待客户端连接")
+		PrintDebug("open client listen port %s ..."%iClientPort)
 	twisted.internet.reactor.run()
 
 def SendMq_Handler():
@@ -199,7 +202,6 @@ def SendMq_Handler():
 		tData = oMq.get()
 		iTargetType, tFlag, bData = tData
 		sIP, iPort = tFlag
-		print("消息队列数据准备发送至%s %s %s" % (sIP, iPort))
 		if iTargetType == SERVER:
 			oProto = g_Connect.get(tFlag, None)
 		elif iTargetType == CLIENT:
@@ -209,13 +211,13 @@ def SendMq_Handler():
 		if oProto:
 			oProto.m_Socket.transport.getHandle().sendall(bData)
 		else:
-			print("WARNING: No connect %s %s"%tFlag)
+			PrintWarning("No connect %s %s"%tFlag)
 	timer.Call_out(conf.GetInterval(), "SendMq_Handler", SendMq_Handler)
 
 def PutData(data):
 	oRecvMq = mq.GetMq(MSGQUEUE_RECV)
 	if oRecvMq:
 		if oRecvMq.full():
-			print("数据在加载")
+			PrintDebug("data is loading")
 			return
 		oRecvMq.put(data)

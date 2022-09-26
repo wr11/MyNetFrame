@@ -62,11 +62,10 @@ def PacketSend(iLink, oNetPack):
 	bData = oNetPack.m_BytesBuffer
 	if oMq:
 		if oMq.full():
-			print("网络延迟中")
+			PrintWarning("net work delay")
 			return
 		tFlag = CallManagerFunc("link", "GetClientLink", iLink)
 		oMq.put((pubdefines.CLIENT, tFlag, bData))
-		print("数据 %s 已加入消息队列" % (bData))
 	del oNetPack
  
 def S2SPacketSend(iServer, iIndex, oNetPack):
@@ -74,17 +73,15 @@ def S2SPacketSend(iServer, iIndex, oNetPack):
 	bData = oNetPack.m_BytesBuffer
 	if oMq:
 		if oMq.full():
-			print("网络延迟中")
+			PrintWarning("net work delay")
 			return
 		tFlag = CallManagerFunc("link", "GetLink", iServer, iIndex)
 		oMq.put((pubdefines.SERVER, tFlag, bData))
-		print("数据 %s 已加入消息队列" % (bData))
 	del oNetPack
 
 '''def PacketSend(iLink, oNetPack):
 	oLink = pubdefines.CallManagerFunc("link", "GetLink", iLink)
 	if oLink:
-		print("数据 %s 打包完毕，发送至 %s 客户端" % (oNetPack.m_BytesBuffer, oLink.m_ID))
 		#oLink.m_Socket.transport.write(oNetPack.m_BytesBuffer)
 		#oLink.m_Socket.transport.getHandle().sendall(oNetPack.m_BytesBuffer)
 	del oNetPack'''

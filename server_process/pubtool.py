@@ -106,8 +106,8 @@ class MyFuncotor(Functor):
 		try:
 			return super().__call__(*args, **kwargs)
 		except Exception as e:
-			print('trace' + '-' * 40)
+			PrintDebug('trace' + '-' * 40)
 			for filename, line, formcode in self.__m_traceinfo[::-1]:
-				print(filename, 'line%s'%line, 'in %s '%formcode)
-			print
+				PrintDebug(filename, 'line%s'%line, 'in %s '%formcode)
+			PrintDebug
 			raise e

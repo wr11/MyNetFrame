@@ -47,7 +47,7 @@ def GenerateFSTGoods(oFST):
 	return oFST
 
 '''o=CGoods(100,130,110,50,10001)
-print(o.m_Storage)'''
+PrintDebug(o.m_Storage)'''
 
 class CStateNode:
 	def __init__(self):
@@ -130,7 +130,7 @@ class CFST:
 			self.m_Res = self.m_CurNode.m_Data
 			return 1
 		if self.m_CurState > len(lstInfo):
-			print(self.m_CurNode.m_NodeMap)
+			PrintDebug(self.m_CurNode.m_NodeMap)
 			for _, oState in self.m_CurNode.m_NodeMap.items():
 				self.SetEndData(oState)
 		return 1
@@ -153,30 +153,30 @@ if __name__ == "__main__":
 	'''oFST = CFST(3)
 	oFST.InputState([10,20,30,"whw"])
 	oFST.Find([10,20,])
-	print(oFST.m_Res)'''
+	PrintDebug(oFST.m_Res)'''
 	import time
-	print("FST------------------------")
+	PrintDebug("FST------------------------")
 	time0 = time.time()
 	oFST = CFST(3)
 	GenerateFSTGoods(oFST)
 	time1 = time.time()
 	oFST.Find([13148,130,120])
 	time2 = time.time()
-	#print(oFST.m_Res)
-	print("structtime: ", time1-time0)
-	print("resulttime: ", time2-time1)
-	print("FST------------------------")
+	#PrintDebug(oFST.m_Res)
+	PrintDebug("structtime: ", time1-time0)
+	PrintDebug("resulttime: ", time2-time1)
+	PrintDebug("FST------------------------")
 
-	print("LST------------------------")
+	PrintDebug("LST------------------------")
 	time5 = time.time()
 	lst = GenerateListGoods()
 	time3 = time.time()
 	r=LstFind(lst)
 	time4 = time.time()
-	print("LST------------------------")
-	#print(r)
-	print("structtime: ", time3-time5)
-	print("resulttime: ", time4-time3)
-	print("LST------------------------")
+	PrintDebug("LST------------------------")
+	#PrintDebug(r)
+	PrintDebug("structtime: ", time3-time5)
+	PrintDebug("resulttime: ", time4-time3)
+	PrintDebug("LST------------------------")
 
-	print(len(oFST.m_Res),len(r))
+	PrintDebug(len(oFST.m_Res),len(r))

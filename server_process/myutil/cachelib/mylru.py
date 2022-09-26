@@ -189,7 +189,7 @@ def test():
 	start = time.time()
 	result = fib_cache(35)
 	end = time.time()
-	print("result: %s, use time: %.6f" % (result, end - start))
-	print("cache:", fib_cache.cache_info)
+	PrintDebug("result: %s, use time: %.6f" % (result, end - start))
+	PrintDebug("cache:", fib_cache.cache_info)
 
 test()

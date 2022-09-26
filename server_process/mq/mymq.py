@@ -23,7 +23,7 @@ def Put(data, iType):
 	if not oQueue:
 		return
 	if oQueue.full():
-		print("网络延迟中，请稍后再试")
+		PrintWarning("网络延迟中，请稍后再试")
 		return -1
 	oQueue.put(data)
 	return 1
@@ -37,7 +37,7 @@ def Get(iType):
 	if not oQueue:
 		return
 	if oQueue.empty():
-		print("数据加载中，请稍后再试")
+		PrintWarning("数据加载中，请稍后再试")
 		return -1
 	return oQueue.get()
 

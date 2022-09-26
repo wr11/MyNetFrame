@@ -24,7 +24,7 @@ def traversal(skiplist):
 		while header:
 			level_str += ' -> %s' % header.key
 			header = header.forward[i]
-		#print(level_str)
+		#PrintDebug(level_str)
 		i -= 1
 
 
@@ -127,20 +127,20 @@ def main():
 		skiplist.insert(number, None)
 
 	'''traversal(skiplist)
-	print(skiplist.search(9634))
+	PrintDebug(skiplist.search(9634))
 	skiplist.delete(4)
 	traversal(skiplist)'''
 	
 	import time
 	iTime1=time.time()
-	print(skiplist.search(9634))
+	PrintDebug(skiplist.search(9634))
 	iTime2=time.time()
 	
 	iTime3=time.time()
-	print(9634 in number_list)
+	PrintDebug(9634 in number_list)
 	iTime4=time.time()
 	
-	print("skiplist:%s, list%s"%(iTime2-iTime1, iTime4-iTime3))
+	PrintDebug("skiplist:%s, list%s"%(iTime2-iTime1, iTime4-iTime3))
 
 if __name__ == '__main__':
 	main()

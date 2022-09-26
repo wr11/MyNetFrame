@@ -26,5 +26,5 @@ p1.next=p2;
 p2.next=p3; 
 p=ReverseNode(head);  #输出链表 4->3->2->1->None 
 while p: 
-  print(p.val); 
+  PrintDebug(p.val); 
   p=p.next; 

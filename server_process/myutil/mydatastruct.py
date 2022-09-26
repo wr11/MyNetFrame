@@ -22,11 +22,11 @@ class CDefaultList(list):
 		return self.m_Default
 '''   
 a=CDefaultList(dict(), 10)
-print(a)
+PrintDebug(a)
 
 b=CDefaultList([])
 b[10]=12
-print(b)
+PrintDebug(b)
 '''
 
 
@@ -39,5 +39,5 @@ class CRangeDict(dict):
 '''
 b=CRangeDict()
 b[10,20] = 45
-print(b)
+PrintDebug(b)
 '''
