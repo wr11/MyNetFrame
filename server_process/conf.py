@@ -32,6 +32,7 @@ NORMAL = 3
 
 #-----------------server conf----------------
 SERVER_CONF = {
+	"iVersion": 0.2,
 	"run_attr":{
 		"bDebug" : True,
 		"iMaxSendNum" : 100,
@@ -197,6 +198,9 @@ def GetMaxSendNum():
 
 def GetMaxReceiveNum():
 	return SERVER_CONF["run_attr"]["iMaxReceiveNum"]
+
+def GetServerVersion():
+	return SERVER_CONF["iVersion"]
 
 def GetRedisConfig():
 	return SERVER_CONF["redis"]["config"]

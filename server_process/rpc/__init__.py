@@ -6,7 +6,6 @@ import rpc.myrpc as myrpc
 
 RemoteCallFunc = myrpc.RemoteCallFunc
 Receive = myrpc.Receive
-RemoveRpcByLink = myrpc.RemoveRpcByLink
 RpcFunctor = myrpc.RpcFunctor
 RpcOnlyCBFunctor = myrpc.RpcOnlyCBFunctor
 AsyncRemoteCallFunc = myrpc.AsyncRemoteCallFunc

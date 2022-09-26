@@ -4,23 +4,14 @@ import time
 
 
 #全局注释
-#版本信息，客户端和服务端应保持一致
-VERSION = 0.1
 
 #数据发送目标的角色
 CLIENT = 1
 SERVER = 0
 
-#服务器地址
-SERVER_HOST = "127.0.0.1"
-CSERVER_PORT = 8000
-SSERVER_PORT = 8001
-SERVER_NUM = 1001
-
 #消息队列类型
 MSGQUEUE_SEND = 1
 MSGQUEUE_RECV = 2
-DELAY_TIME = 0.1
 
 #mysql游标类型
 MYSQL_CURSOR = "Cursor"

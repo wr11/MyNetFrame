@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from protocol import *
-from pubdefines import C2S, S2S, CallManagerFunc, SERVER_NUM, SELF
+from pubdefines import CallManagerFunc
 
 import script.login.net as ln
 import netpackage as np
