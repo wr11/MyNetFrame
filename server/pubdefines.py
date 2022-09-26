@@ -85,80 +85,80 @@ def GetManagerFunc(sFlag, sFunc):
 Reference_Time = int(time.mktime((2006,10,2,0,0,0,0,0,0)))
 
 def GetNowTime():
-    return int(time.time())
+	return int(time.time())
 
 def TimeStr(iTime = 0):
-    if not iTime:
-        iTime = GetNowTime()
-    oTime = time.localtime(iTime)
-    return time.strftime("%Y-%m-%d %H:%M:%S", oTime)
+	if not iTime:
+		iTime = GetNowTime()
+	oTime = time.localtime(iTime)
+	return time.strftime("%Y-%m-%d %H:%M:%S", oTime)
 
 def GetTimeSec(setTime):
-    return int(time.mktime(setTime))
+	return int(time.mktime(setTime))
 
 def GetDayNo(iTime = 0):
-    if not iTime:
-        iTime = GetNowTime()
-    iDayNo = (iTime - Reference_Time)/3600/24
-    return int(iDayNo) + 1
+	if not iTime:
+		iTime = GetNowTime()
+	iDayNo = (iTime - Reference_Time)/3600/24
+	return int(iDayNo) + 1
 
 def GetHourNo(iTime = 0):
-    if not iTime:
-        iTime = GetNowTime()
-    iHourNo = (iTime - Reference_Time)/3600
-    return int(iHourNo)
+	if not iTime:
+		iTime = GetNowTime()
+	iHourNo = (iTime - Reference_Time)/3600
+	return int(iHourNo)
 
 def GetMiniteNo(iTime = 0):
-    if not iTime:
-        iTime = GetNowTime()
-    iMiniteNo = (iTime - Reference_Time)/60
-    return int(iMiniteNo)
+	if not iTime:
+		iTime = GetNowTime()
+	iMiniteNo = (iTime - Reference_Time)/60
+	return int(iMiniteNo)
 
 def GetWeekNo(iTime = 0):
-    if not iTime:
-        iTime = GetNowTime()
-    iWeekNo = (iTime - Reference_Time)/3600/24/7
-    return int(iWeekNo)+1
+	if not iTime:
+		iTime = GetNowTime()
+	iWeekNo = (iTime - Reference_Time)/3600/24/7
+	return int(iWeekNo)+1
 
 def GetMonthNo(iTime = 0):
-    if not iTime:
-        iTime = GetNowTime()
-    setTime = time.localtime(iTime)
-    return (setTime[0] - 2000) *100 + setTime[1]
+	if not iTime:
+		iTime = GetNowTime()
+	setTime = time.localtime(iTime)
+	return (setTime[0] - 2000) *100 + setTime[1]
 
 def GetYearNo(iTime = 0):
-    if not iTime:
-        iTime = GetNowTime()
-    setTime = time.localtime(iTime)
-    return setTime[0]
+	if not iTime:
+		iTime = GetNowTime()
+	setTime = time.localtime(iTime)
+	return setTime[0]
 
 def GetSecByMinNo(iNo):
-    return iNo * 60 + Reference_Time
+	return iNo * 60 + Reference_Time
 
 def GetSecByHourNo(iNo):
-    return iNo * 3600 + Reference_Time
+	return iNo * 3600 + Reference_Time
 
 def GetSecByDayNo(iNo):
-    return (iNo - 1) * 3600 * 24 + Reference_Time
+	return (iNo - 1) * 3600 * 24 + Reference_Time
 
 def GetSecByWeekNo(iNo):
-    return (iNo - 1) * 3600 * 24 * 7 + Reference_Time
+	return (iNo - 1) * 3600 * 24 * 7 + Reference_Time
 
 def GetSecByMonthNo(iNo):
-    return int(time.mktime((iNo/100 + 2000, iNo%100, 1, 0, 0, 0, 0, 0, 0)))
+	return int(time.mktime((iNo/100 + 2000, iNo%100, 1, 0, 0, 0, 0, 0, 0)))
 
 def GetSecByYearNo(iNo):
-    return int(time.mktime((iNo, 1, 1, 0, 0, 0, 0, 0, 0)))
+	return int(time.mktime((iNo, 1, 1, 0, 0, 0, 0, 0, 0)))
 
 def GetDay0Sec(iNo):
-    if not iNo:
-        iNo = GetDayNo() - 1
-    return Reference_Time + iNo * 3600 * 24
+	if not iNo:
+		iNo = GetDayNo() - 1
+	return Reference_Time + iNo * 3600 * 24
 
 def GetDay5Sec(iNo):
-    return GetDay0Sec(iNo) + 5*3600
+	return GetDay0Sec(iNo) + 5*3600
 
 def Get5DayNo(iTime):
-    if not iTime:
-        iTime = GetNowTime()
-    return GetDayNo(iTime - 5*3600)
+	if not iTime:
+		iTime = GetNowTime()
+	return GetDayNo(iTime - 5*3600)

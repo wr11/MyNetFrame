@@ -1,20 +1,20 @@
 class CListNode: 
   def __init__(self,x): 
-    self.val=x; 
-    self.next=None; 
+	self.val=x; 
+	self.next=None; 
  
-def ReverseNode(head):       #循环的方法反转链表 
+def ReverseNode(head):	   #循环的方法反转链表 
   if head is None or head.next is None: 
-    return head; 
+	return head; 
   pre=None; 
   cur=head; 
   h=head; 
   while cur: 
-    h=cur; 
-    tmp=cur.next; 
-    cur.next=pre; 
-    pre=cur; 
-    cur=tmp; 
+	h=cur; 
+	tmp=cur.next; 
+	cur.next=pre; 
+	pre=cur; 
+	cur=tmp; 
   return h; 
    
 head=CListNode(1);  #测试代码 
