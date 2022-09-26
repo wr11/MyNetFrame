@@ -6,8 +6,6 @@
 from tkinter.font import NORMAL
 from myutil.cachelib.cachefunc import CacheResult
 
-VERSION = 1
-
 GATE	=	1<<0		#网关
 GPS 	=	1<<1		#玩法
 DBS 	=	1<<2		#数据落地(redis+mysql)

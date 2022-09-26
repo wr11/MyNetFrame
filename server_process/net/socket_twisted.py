@@ -120,7 +120,7 @@ class CServer(twisted.internet.protocol.Protocol):
 class CBaseServerFactory(twisted.internet.protocol.Factory):
 	protocol = CServer
 
-#--------------接受连接(作为服务器接受其他客户端的连接)实例---------------
+#--------------客户端连接(作为服务器接受其他客户端的连接)实例---------------
 class CClientServer(twisted.internet.protocol.Protocol):
 	def connectionMade(self):
 		global g_ClientConnect, g_ClientConnectID

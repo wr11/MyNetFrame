@@ -21,7 +21,6 @@ class CNetCommand:
 		func(who, oNetPackage)
 
 def MQMessage(tData):
-	import rpc
 	iMQProto, data = tData
 	if iMQProto < 0x100:
 		OnMQMessage(tData)
