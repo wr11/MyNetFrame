@@ -274,8 +274,10 @@ def Init(iServerID, iIndex):
 def SetCMDTitle(sName, iServerID, dConfig):
 	# import os
 	# os.system("title %s:%s %s_%s"%(sName, iServerID, TYPE2NAME[dConfig["iType"]], dConfig["iIndex"]))
-	import ctypes
-	ctypes.windll.kernel32.SetConsoleTitleW("%s:%s %s_%s"%(sName, iServerID, TYPE2NAME[dConfig["iType"]], dConfig["iIndex"]))
+	import os
+	if os.name == "nt":
+		import ctypes
+		ctypes.windll.kernel32.SetConsoleTitleW("%s:%s %s_%s"%(sName, iServerID, TYPE2NAME[dConfig["iType"]], dConfig["iIndex"]))
 
 def GetConnects():
 	global LOCAL_SERVERNUM, LOCAL_SERVERCONFIG
