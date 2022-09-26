@@ -67,7 +67,7 @@ class DeferClient(twisted.internet.protocol.Protocol):
 		tFlag1 = (iServer, iIndex)
 		PutData((MQ_DISCONNECT, tFlag1))
 
-		PrintDebug("disconnect %s %s %s"%(tFlag, reason))
+		PrintDebug("disconnect %s %s"%(tFlag, reason))
 
 class DefaultClientFactory(twisted.internet.protocol.ReconnectingClientFactory):
 	protocol = DeferClient
@@ -114,7 +114,7 @@ class CServer(twisted.internet.protocol.Protocol):
 		sHost = self.transport.getPeer().host
 		iPort = self.transport.getPeer().port
 		tFlag = (sHost, iPort)
-		PutData(MQ_DATARECEIVED, data)
+		PutData((MQ_DATARECEIVED, data))
 
 class CBaseServerFactory(twisted.internet.protocol.Factory):
 	protocol = CServer
@@ -202,7 +202,6 @@ def SendMq_Handler():
 		iHandled += 1
 		tData = oMq.get()
 		iTargetType, tFlag, bData = tData
-		sIP, iPort = tFlag
 		if iTargetType == SERVER:
 			oProto = g_Connect.get(tFlag, None)
 		elif iTargetType == CLIENT:
@@ -210,7 +209,7 @@ def SendMq_Handler():
 		else:
 			oProto = None
 		if oProto:
-			oProto.m_Socket.transport.getHandle().sendall(bData)
+			oProto.transport.getHandle().sendall(bData)
 		else:
 			PrintWarning("No connect %s %s"%tFlag)
 	timer.Call_out(conf.GetInterval(), "SendMq_Handler", SendMq_Handler)

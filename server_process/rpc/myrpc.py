@@ -282,14 +282,14 @@ class CRPCResponse:
 		func = GetGlobalFuncByName(self.m_CallFunc)
 		try:
 			func(self, *self.m_Args, **self.m_Kwargs)
-		except:
+		except Exception as e:
 			oPacket = CRPCPacket()
-			oPacket._PushCallPacket((pubdefines.SERVER_NUM, self.m_CBIdx))
+			iCurServer, iCurProcessIndex = conf.GetServerNum(), conf.GetProcessIndex()
+			oPacket._PushCallPacket((iCurServer, iCurProcessIndex, self.m_CBIdx))
 			oPack = np.PacketPrepare(SS_RESPONSEERR)
 			np.PacketAddB(oPacket.m_Data, oPack)
-			iLink = g_ServerNum2Link.get(self.m_SourceServer, 0)
-			np.S2SPacketSend(iLink, oPack)
-			raise Exception("远程调用函数执行错误")
+			np.S2SPacketSend(self.m_SourceServer[0], self.m_SourceServer[1], oPack)
+			PrintError(e)
 
 def RemoteCallFunc(iServer, iIndex, oCallBack, sFunc, *args, **kwargs):
 	tFlag = (iServer, iIndex)
@@ -298,7 +298,7 @@ def RemoteCallFunc(iServer, iIndex, oCallBack, sFunc, *args, **kwargs):
 	tLink = pubdefines.CallManagerFunc("link", "GetLink", tFlag[0], tFlag[1])
 	oPacket = CRPCPacket()
 	oRpc.InitCall(oCallBack, oPacket, sFunc, *args, **kwargs)
-	oRpc.CallFunc(tLink[0], tLink[1])
+	oRpc.CallFunc(iServer, iIndex)
  
 def GetRpcObject(tFlag):
 	global g_RPCManager
@@ -325,13 +325,13 @@ def Receive(iHeader, data):
   
 def _OnResponseErr(lstInfo):
 	global g_RPCManager
-	oRpc = g_RPCManager.get(lstInfo[0], 0)
+	oRpc = g_RPCManager.get((lstInfo[0], lstInfo[1]))
 	if not oRpc:
 		PrintDebug("rpc object has unload%s"%lstInfo[0])
 		return
-	oCallBack = oRpc.m_CallBackBuff.Get(lstInfo[1])
+	oCallBack = oRpc.m_CallBackBuff.Get(lstInfo[2])
 	if not oCallBack:
-		PrintDebug("rpccallback object has deleted%s"%lstInfo[1])
+		PrintDebug("rpccallback object has deleted%s"%lstInfo[2])
 		return
 	oCallBack.ExecErr()
 
@@ -386,7 +386,7 @@ def _BaseBlockCall(iServer, iIndex, sTatgetFunc, args, kwargs):
 	tLink = pubdefines.CallManagerFunc("link", "GetLink", tFlag[0], tFlag[1])
 	oPacket = CRPCPacket()
 	oRpc.InitCall(cb, oPacket, sTatgetFunc, *args, **kwargs)
-	oRpc.CallFunc(tLink[0], tLink[1])
+	oRpc.CallFunc(iServer, iIndex)
 
 class RpcException(Exception):
 	pass
