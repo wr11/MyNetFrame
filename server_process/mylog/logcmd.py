@@ -38,13 +38,14 @@ def Init(sThread):
 	init(autoreset=True)
 
 	PrintNotify("Logger inited")
+	PrintStack()
 
 def GetCommonLogHeader(iType):
 	global LOCAL_FLAG, LOCAL_THREAD
 	sTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 	lstTraceMsg = traceback.format_stack()[-3].split(",")
-	sFile = lstTraceMsg[0].replace("\\", "/").split("/")[-1][:-1]	#[:-1]去掉多余的 "
-	sLine = lstTraceMsg[1]
+	sFile = lstTraceMsg[0].replace("\\", "/").split("/")[-1][:-4]	#[:-4]去掉多余的.py"
+	sLine = lstTraceMsg[1].split(" ")[2]
 	sFormatTime = "[%s]"%sTime
 	sFormatProc = "[%s:%s]"%(LOCAL_FLAG, LOCAL_THREAD)
 	sFormatType = "[%s]"%TYPE2DESC[iType]
