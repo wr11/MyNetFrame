@@ -10,11 +10,11 @@ def Init():
 	if not conf.IsDebug():
 		return
 	LookFile()
-	PrintDebug("reload inited", FILE_LIST)
+	PrintNotify("reload inited")
 	timer.Call_out(5, "ProjReload", MyReload)
 
 def MyReload():
-	PrintNotify("reloading ... ")
+	PrintDebug("reloading ... ")
 	LookFile(True, True)
 	timer.Call_out(5, "ProjReload", MyReload)
 
