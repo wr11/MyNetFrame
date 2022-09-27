@@ -363,8 +363,8 @@ def RpcOnlyCBFunctor(oCBFunc, *args, **kwargs):
 def AsyncRpcFunctor(oCBFunc):
 	return CCallBackFunctor2(oCBFunc)
 
-def AsyncRemoteCallFunc(iServer, sFunc, *args, **kwargs):
-	return _BaseBlockCall(iServer, sFunc, args, kwargs)
+def AsyncRemoteCallFunc(iServer, iIndex, sFunc, *args, **kwargs):
+	return _BaseBlockCall(iServer, iIndex, sFunc, args, kwargs)
 
 def _BaseBlockCall(iServer, iIndex, sTatgetFunc, args, kwargs):
 	tFlag = (iServer, iIndex)
