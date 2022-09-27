@@ -41,6 +41,7 @@ class DeferClient(twisted.internet.protocol.Protocol):
 
 			PutData((MQ_LOCALMAKEROUTE, (sHost, iPort, self.m_ServerID, self.m_Index)))
 		else:
+			PrintWarning("connection repeated %s %s"%tFlag)
 			self.transport.loseConnection()
 
 	def dataReceived(self, data):
