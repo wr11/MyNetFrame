@@ -27,4 +27,4 @@ def fib(n, a, b):
 	else:
 		return fib(n-1, b, a+b)
 
-r = fib(1200, 0, 1) #突破了调用栈的深度限制
+# r = fib(1200, 0, 1) #突破了调用栈的深度限制

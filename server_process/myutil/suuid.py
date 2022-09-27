@@ -34,5 +34,5 @@ def Test():
 	iServerNo = GetServerByUUID(sUUID)
 	PrintDebug(iServerNo)
 	
-if __name__ == "__main__":
-	Test()
+# if __name__ == "__main__":
+# 	Test()

@@ -47,5 +47,3 @@ def K():
 		a-b
 	except Exception as e:
 		Print(e)
-
-K()

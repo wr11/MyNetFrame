@@ -15,9 +15,9 @@ def Shuffle(lst, iSeed):
 	random.shuffle(lst)
 	PrintDebug(f"Shuffle Res:{list(i[1] for i in lst)}")
 
-if __name__ == "__main__":
-	lstMember = [(51872,"蛋仔"),(93903,"瑜瑾")]
-	lstSeed = ["56","5896512"]
-	iSeed = GenerateSeed(lstSeed)
-	PrintDebug(iSeed)
-	Shuffle(lstMember, iSeed)
+# if __name__ == "__main__":
+# 	lstMember = [(51872,"蛋仔"),(93903,"瑜瑾")]
+# 	lstSeed = ["56","5896512"]
+# 	iSeed = GenerateSeed(lstSeed)
+# 	PrintDebug(iSeed)
+# 	Shuffle(lstMember, iSeed)

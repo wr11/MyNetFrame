@@ -165,8 +165,8 @@ class CLru:
 		return 0
 
 
-cache = CLru(128)
-cache.SetValue("test", 1)
-cache.SetValue("test", 2)
-PrintDebug(cache.FindObject("test"))
-PrintDebug(cache.CacheInfo())
+# cache = CLru(128)
+# cache.SetValue("test", 1)
+# cache.SetValue("test", 2)
+# PrintDebug(cache.FindObject("test"))
+# PrintDebug(cache.CacheInfo())

@@ -1,7 +1,3 @@
-from _typeshed import OpenBinaryModeUpdating
-from typing import Optional
-
-
 class CMap(object):
 	def __init__(self):
 		self.m_iWidth = 0

@@ -8,6 +8,7 @@ import script.user as user
 import script.link as link
 import conf
 import mylog
+import hotfix
 
 def RecvMq_Handler():
 	iMax = conf.GetMaxReceiveNum()
@@ -24,6 +25,7 @@ def RecvMq_Handler():
 def run(oSendMq, oRecvMq, oConfInitFunc):
 	oConfInitFunc()
 	mylog.Init("SRC")
+	hotfix.Init()
 	user.Init()
 	link.Init()
 	mq.SetMq(oSendMq, MSGQUEUE_SEND)

@@ -178,18 +178,18 @@ def _lru_cache_warrper(user_function, maxsize, typed, _CacheInfo):
 
 
 
-@lru_cache()
-def fib_cache(x):
-	if x == 0 or x == 1:
-		return x
-	else:
-		return fib_cache(x - 1) + fib_cache(x - 2)
+# @lru_cache()
+# def fib_cache(x):
+# 	if x == 0 or x == 1:
+# 		return x
+# 	else:
+# 		return fib_cache(x - 1) + fib_cache(x - 2)
 
-def test():
-	start = time.time()
-	result = fib_cache(35)
-	end = time.time()
-	PrintDebug("result: %s, use time: %.6f" % (result, end - start))
-	PrintDebug("cache:", fib_cache.cache_info)
+# def test():
+# 	start = time.time()
+# 	result = fib_cache(35)
+# 	end = time.time()
+# 	PrintDebug("result: %s, use time: %.6f" % (result, end - start))
+# 	PrintDebug("cache:", fib_cache.cache_info)
 
-test()
+# test()

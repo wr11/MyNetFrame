@@ -24,8 +24,8 @@ class _LimitFunction(object):
 			return func
 		return func1
 
-import sys
-sys.modules[__name__] = _LimitFunction()
+# import sys
+# sys.modules[__name__] = _LimitFunction()
 
 '''
 #test:

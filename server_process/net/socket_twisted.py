@@ -11,6 +11,7 @@ import timer
 import mq
 import conf
 import mylog
+import hotfix
 
 if "g_Connect" not in globals():
 	g_Connect = {}
@@ -166,6 +167,7 @@ def run(oSendMq, oRecvMq, oConfInitFunc):
 	global g_Connect
 	oConfInitFunc()
 	mylog.Init("NET")
+	hotfix.Init()
 
 	mq.SetMq(oSendMq, MSGQUEUE_SEND)
 	mq.SetMq(oRecvMq, MSGQUEUE_RECV)
@@ -182,7 +184,6 @@ def run(oSendMq, oRecvMq, oConfInitFunc):
 		if tFlag in g_Connect:
 			continue
 		twisted.internet.reactor.connectTCP(sIP, iPort, DefaultClientFactory(iServerID, index))
-	# twisted.internet.reactor.listenTCP(CSERVER_PORT, CBaseServerFactory())
 	sMyIP, iMyPort = conf.GetCurProcessIPAndPort()
 	twisted.internet.reactor.listenTCP(iMyPort, CBaseServerFactory())
 	PrintNotify("open listen port %s ..."%iMyPort)

@@ -142,5 +142,5 @@ def main():
 	
 	PrintDebug("skiplist:%s, list%s"%(iTime2-iTime1, iTime4-iTime3))
 
-if __name__ == '__main__':
-	main()
+# if __name__ == '__main__':
+# 	main()

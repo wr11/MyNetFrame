@@ -8,5 +8,5 @@ class _const:
 			raise self.ConstError("Const %s Can't be reassigned" %name)
 		self.__dict__[name]=value
 
-import sys
-sys.modules[__name__] = _const()
+# import sys
+# sys.modules[__name__] = _const()
