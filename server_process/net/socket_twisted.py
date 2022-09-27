@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from operator import index
 from pubdefines import MSGQUEUE_SEND, MSGQUEUE_RECV, CLIENT, SERVER
 from protocol import *
 from netpackage import *
@@ -36,7 +35,7 @@ class DeferClient(twisted.internet.protocol.Protocol):
 		tFlag = (sHost, iPort)
 		if (tFlag not in g_Connect.keys()) or (tFlag in g_Connect.keys() and not g_Connect[tFlag].connected):
 			g_Connect[tFlag] = self
-			PrintDebug("listen %s %s  connected"%tFlag)
+			PrintNotify("listen %s %s  connected"%tFlag)
 			if not timer.GetTimer("SendMq_Handler"):
 				timer.Call_out(conf.GetInterval(), "SendMq_Handler", SendMq_Handler)
 
@@ -67,7 +66,7 @@ class DeferClient(twisted.internet.protocol.Protocol):
 		tFlag1 = (iServer, iIndex)
 		PutData((MQ_DISCONNECT, tFlag1))
 
-		PrintDebug("disconnect %s %s"%(tFlag, reason))
+		PrintNotify("disconnect %s %s"%(tFlag, reason))
 
 class DefaultClientFactory(twisted.internet.protocol.ReconnectingClientFactory):
 	protocol = DeferClient
@@ -128,7 +127,7 @@ class CClientServer(twisted.internet.protocol.Protocol):
 		tFlag = (sHost, iPort)
 		if (tFlag not in g_ClientConnect.keys()) or (tFlag in g_ClientConnect.keys() and not g_ClientConnect[tFlag].connected):
 			g_ClientConnect[tFlag] = self
-			PrintDebug("client %s %s connected"%tFlag)
+			PrintNotify("client %s %s connected"%tFlag)
 			if not timer.GetTimer("SendMq_Handler"):
 				timer.Call_out(conf.GetInterval(), "SendMq_Handler", SendMq_Handler)
 
@@ -148,12 +147,14 @@ class CClientServer(twisted.internet.protocol.Protocol):
 		
 		PutData((MQ_CLIENTDISCONNECT, (iConnectID,)))
 
+		PrintNotify("client %s %s disconnected"%tFlag)
+
 
 	def dataReceived(self, data):
 		sHost = self.transport.getPeer().host
 		iPort = self.transport.getPeer().port
 		tFlag = (sHost, iPort)
-		PrintDebug("client data received")
+		PrintNotify("client data received")
 		PutData((MQ_DATARECEIVED, data))
 
 class CClientServerFactory(twisted.internet.protocol.Factory):
@@ -170,7 +171,7 @@ def run(oSendMq, oRecvMq, oConfInitFunc):
 
 	lstConfigs = conf.GetConnects()
 	lstLog = [(i[0], i[1]["iIndex"]) for i in lstConfigs]
-	PrintDebug("need connect to %s"%str(lstLog))
+	PrintNotify("need connect to %s"%str(lstLog))
 	for tConfig in lstConfigs:
 		iServerID, dConfig = tConfig
 		sIP = dConfig["sIP"]
@@ -183,11 +184,11 @@ def run(oSendMq, oRecvMq, oConfInitFunc):
 	# twisted.internet.reactor.listenTCP(CSERVER_PORT, CBaseServerFactory())
 	sMyIP, iMyPort = conf.GetCurProcessIPAndPort()
 	twisted.internet.reactor.listenTCP(iMyPort, CBaseServerFactory())
-	PrintDebug("open listen port %s ..."%iMyPort)
+	PrintNotify("open listen port %s ..."%iMyPort)
 	if conf.IsGate():
 		iClientPort = conf.GetClientPort()
 		twisted.internet.reactor.listenTCP(iClientPort, CClientServerFactory())
-		PrintDebug("open client listen port %s ..."%iClientPort)
+		PrintNotify("open client listen port %s ..."%iClientPort)
 	twisted.internet.reactor.run()
 
 def SendMq_Handler():
@@ -218,6 +219,6 @@ def PutData(data):
 	oRecvMq = mq.GetMq(MSGQUEUE_RECV)
 	if oRecvMq:
 		if oRecvMq.full():
-			PrintDebug("data is loading")
+			PrintWarning("data is loading")
 			return
 		oRecvMq.put(data)

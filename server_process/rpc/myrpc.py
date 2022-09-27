@@ -165,7 +165,7 @@ class CResult(object):
 		self.m_Error = self._E_TIMEOUT
 		self.m_ErrorInfo = Exception("timeout")
   
-	def SetRunError(self, err):
+	def SetRunError(self, err = "rpc remote err"):
 		self.m_Error = self._E_RUNERR
 		self.m_ErrorInfo = err
 
@@ -266,7 +266,7 @@ class CRPCResponse:
 
 	def __call__(self, *args, **kwargs):
 		if not self.m_CBIdx:		#不需要回调
-			PrintDebug("do not need callback")
+			PrintWarning("do not need callback")
 			return
 		if self.m_Called:		#不可重复回调
 			return
@@ -293,7 +293,7 @@ class CRPCResponse:
 
 def RemoteCallFunc(iServer, iIndex, oCallBack, sFunc, *args, **kwargs):
 	tFlag = (iServer, iIndex)
-	PrintDebug("remote call func start ...%s %s"%(iServer, iIndex))
+	PrintNotify("remote call func start ...%s %s"%(iServer, iIndex))
 	oRpc = GetRpcObject(tFlag)
 	tLink = pubdefines.CallManagerFunc("link", "GetLink", tFlag[0], tFlag[1])
 	oPacket = CRPCPacket()
@@ -314,7 +314,7 @@ def Receive(iHeader, data):
 	oBuffer = BytesIO(data)
 	unpacker = msgpack.Unpacker(oBuffer, raw=False)
 	lstInfo = [unpacked for unpacked in unpacker]
-	PrintDebug("rpc remote receive %s"%str(lstInfo))
+	PrintNotify("rpc remote receive %s"%str(lstInfo))
 	if iHeader == SS_RPCCALL:
 		oResponse = CRPCResponse(lstInfo)
 		oResponse.RemoteExcute()
@@ -327,11 +327,11 @@ def _OnResponseErr(lstInfo):
 	global g_RPCManager
 	oRpc = g_RPCManager.get((lstInfo[0], lstInfo[1]))
 	if not oRpc:
-		PrintDebug("rpc object has unload%s"%lstInfo[0])
+		PrintWarning("err rpc object has unload%s"%lstInfo[0])
 		return
 	oCallBack = oRpc.m_CallBackBuff.Get(lstInfo[2])
 	if not oCallBack:
-		PrintDebug("rpccallback object has deleted%s"%lstInfo[2])
+		PrintWarning("err rpccallback object has deleted%s"%lstInfo[2])
 		return
 	oCallBack.ExecErr()
 
@@ -340,11 +340,11 @@ def _OnResponse(lstInfo):
 	tFlag = (lstInfo[0], lstInfo[1])
 	oRpc = g_RPCManager.get(tFlag, 0)
 	if not oRpc:
-		PrintDebug("rpc object has unload%s %s"%tFlag)
+		PrintWarning("rpc object has unload%s %s"%tFlag)
 		return
 	oCallBack = oRpc.m_CallBackBuff.Get(lstInfo[2])
 	if not oCallBack:
-		PrintDebug("rpccallback object has deleted%s"%lstInfo[2])
+		PrintWarning("rpccallback object has deleted%s"%lstInfo[2])
 		return
 	oCallBack.ExecCallBack(lstInfo[3], lstInfo[4])
 	oRpc.m_CallBackBuff.Pop(lstInfo[2])

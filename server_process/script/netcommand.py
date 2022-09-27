@@ -39,11 +39,11 @@ def ParseMQMessage(iMQHeader, data):
 	if iMQHeader == MQ_LOCALMAKEROUTE:
 		sHost, iPort, iServer, iIndex = data
 		CallManagerFunc("link", "AddLink", sHost, iPort, iServer, iIndex)
-		PrintDebug("scr connected %s %s %s %s"%(sHost, iPort, iServer, iIndex))
+		PrintNotify("scr connected %s %s %s %s"%(sHost, iPort, iServer, iIndex))
 	elif iMQHeader == MQ_DISCONNECT:
 		iServer, iIndex = data
 		CallManagerFunc("link", "DelLink", iServer, iIndex)
-		PrintDebug("scr disconnected%s %s"%(iServer, iIndex))
+		PrintNotify("scr disconnected%s %s"%(iServer, iIndex))
 	elif iMQHeader == MQ_CLIENTCONNECT:
 		sHost, iPort, iConnectID = data
 		CallManagerFunc("link", "AddClientLink", sHost, iPort, iConnectID)
@@ -56,7 +56,7 @@ def ParseMQMessage(iMQHeader, data):
 def NetCommand(data):
 	oNetPackage = np.UnpackPrepare(data)
 	iDataHeader = np.UnpackI(oNetPackage)
-	PrintDebug("receive header data %s" % iDataHeader)
+	PrintNotify("receive header data %s" % iDataHeader)
 	if 0x100 <= iDataHeader < 0x1000:
 		if iDataHeader in RPC_PROTOCOL:
 			import rpc.myrpc as rpc

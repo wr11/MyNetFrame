@@ -11,13 +11,13 @@ msg2=msgpack.unpack(msg)
 PrintDebug(msg)
 PrintDebug(msg2)'''
 
-import  struct
-import binascii
-import ctypes
-import msgpack
+# import  struct
+# import binascii
+# import ctypes
+# import msgpack
 
-msg = msgpack.packb({1:2,"name":"arr"})
-PrintDebug(msg)
+# msg = msgpack.packb({1:2,"name":"arr"})
+# PrintDebug(msg)
  
 '''values = (1, b'good' , 1.22) #查看格式化字符串可知，字符串必须为字节流类型。
 s =  struct .Struct( 'I4sf' )
@@ -30,3 +30,22 @@ PrintDebug( 'Format string :' , s.format)
 PrintDebug( 'buff :' , buff)
 PrintDebug( 'Packed Value :' , binascii.hexlify(buff))
 PrintDebug( 'Unpacked Type :' , type(unpacked_data),  ' Value:' , unpacked_data)'''
+
+def Print(*args):
+	print(args, *args)
+	args = [str(i) for i in args]
+	sMsg = "Print%s"%(" ".join(args))
+	print(sMsg)
+
+def K():
+	Print(1)
+	Print("s")
+	Print((1,2))
+	Print([1,3])
+	Print({1,5})
+	try:
+		a-b
+	except Exception as e:
+		Print(e)
+
+K()
