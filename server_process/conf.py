@@ -33,9 +33,14 @@ SERVER_CONF = {
 	"iVersion": 0.2,
 	"run_attr":{
 		"bDebug" : True,
+
 		"iMaxSendNum" : 100,
 		"iMaxReceiveNum" : 100,
 		"iInterval" : 0.1,
+
+		"bAutoReloadOpen" : True,		#在isdebug为true才会起作用，即正式环境永不开启autoreload
+		"iAutoReloadInterval" : 3,
+		"iManulReloadInterval" : 3,
 	},
 	"mysql" : {
 		"bIsOn":True,
@@ -223,6 +228,9 @@ if "LOCAL_SERVERNAME" not in globals():
 if "LOCAL_SERVERCONFIG" not in globals():
 	LOCAL_SERVERCONFIG = {}
 
+def GetServerVersion():
+	return SERVER_CONF["iVersion"]
+
 def IsDebug():
 	return SERVER_CONF["run_attr"]["bDebug"]
 
@@ -238,8 +246,14 @@ def GetMaxSendNum():
 def GetMaxReceiveNum():
 	return SERVER_CONF["run_attr"]["iMaxReceiveNum"]
 
-def GetServerVersion():
-	return SERVER_CONF["iVersion"]
+def IsAutoReloadOpen():
+	return SERVER_CONF["run_attr"]["bAutoReloadOpen"]
+
+def GetAutoReloadInterval():
+	return SERVER_CONF["run_attr"]["iAutoReloadInterval"]
+
+def GetManulReloadInterval():
+	return SERVER_CONF["run_attr"]["iManulReloadInterval"]
 
 def GetRedisConfig():
 	return SERVER_CONF["redis"]["config"]

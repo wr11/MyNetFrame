@@ -18,8 +18,7 @@ if __name__ == "__main__":
 
 	oSendMq = mq.GetMq(MSGQUEUE_SEND)
 	oRecvMq = mq.GetMq(MSGQUEUE_RECV)
-	oProcessScript = multiprocessing.Process(target = script.main, args=(oSendMq, oRecvMq, oConfInitFunc, ))
 	oProcessNet = multiprocessing.Process(target = net.main, args=(oSendMq, oRecvMq, oConfInitFunc, ))
-
-	oProcessScript.start()
 	oProcessNet.start()
+
+	script.main(oSendMq, oRecvMq, oConfInitFunc)

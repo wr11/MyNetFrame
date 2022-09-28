@@ -4,8 +4,10 @@ from pubdefines import MSGQUEUE_SEND, MSGQUEUE_RECV
 
 import multiprocessing
 
-g_SendMessageQueue = None
-g_RecvMessageQueue = None
+if "g_SendMessageQueue" not in globals():
+	g_SendMessageQueue = None
+if "g_RecvMessageQueue" not in globals():
+	g_RecvMessageQueue = None
 
 def Init():
 	global g_SendMessageQueue, g_RecvMessageQueue
