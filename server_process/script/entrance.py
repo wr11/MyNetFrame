@@ -24,7 +24,7 @@ def RecvMq_Handler():
 
 def run(oSendMq, oRecvMq, oConfInitFunc):
 	oConfInitFunc()
-	mylog.Init("SRC")
+	mylog.Init("SCR")
 	hotfix.Init()
 	user.Init()
 	link.Init()
