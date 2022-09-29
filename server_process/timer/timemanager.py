@@ -17,8 +17,8 @@ class CTimerManager(pubtool.Singleton):
 		self.Remove_Call_out(sFlag)
 		try:
 			oFunc(*args, **kwargs)
-		except:
-			raise Exception("定时器%s执行错误"%(sFlag))
+		except Exception as e:
+			PrintError("定时器%s执行错误"%(sFlag), e)
 
 	def Call_out(self, iTime, sFlag, oFunc, *args, **kwargs):
 		oExecFunc = pubtool.Functor(self._Execute, oFunc, sFlag)
