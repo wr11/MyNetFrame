@@ -127,4 +127,7 @@ d		double				float				8				(4)
 s		char[]				string				1	 
 p		char[]				string	 	 
 P		void *				integer	 							(5), (3)
+
+str.encode(‘utf-8')
+bytes.decode(‘utf-8')
 """

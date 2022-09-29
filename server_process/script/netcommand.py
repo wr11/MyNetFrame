@@ -18,7 +18,8 @@ class CNetCommand:
 
 	def CallCommand(self, iHeader, oNetPackage, who=None):
 		func = self.m_Map.get(iHeader, None)
-		func(who, oNetPackage)
+		if func:
+			func(who, oNetPackage)
 
 def MQMessage(tData):
 	iMQProto, data = tData

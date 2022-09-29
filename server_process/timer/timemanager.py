@@ -13,15 +13,17 @@ class CTimerManager(pubtool.Singleton):
 		oTimer = threading.Timer(iTime, oFunc, *args, **kwargs)
 		return oTimer
 
-	def _Execute(self, oFunc, sFlag, *args, **kwargs):
+	def _Execute(self, iTime, oFunc, sFlag, *args, **kwargs):
 		self.Remove_Call_out(sFlag)
 		try:
 			oFunc(*args, **kwargs)
 		except Exception as e:
-			PrintError("定时器%s执行错误"%(sFlag), e)
+			self.Call_out(iTime, sFlag, oFunc)
+			PrintError("timer %s excute error"%(sFlag))
+			raise
 
 	def Call_out(self, iTime, sFlag, oFunc, *args, **kwargs):
-		oExecFunc = pubtool.Functor(self._Execute, oFunc, sFlag)
+		oExecFunc = pubtool.Functor(self._Execute, iTime, oFunc, sFlag)
 		oTimer = self._CreateTimer(iTime, oExecFunc, *args, **kwargs)
 		self.m_Map[sFlag] = oTimer
 		oTimer.start()
