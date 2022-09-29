@@ -6,8 +6,11 @@ import conf
 import time
 import traceback
 
-LOCAL_THREAD = ""
-LOCAL_FLAG = ""
+if "LOCAL_THREAD" not in globals():
+	LOCAL_THREAD = ""
+
+if "LOCAL_FLAG" not in globals():
+	LOCAL_FLAG = ""
 
 #PrintDebug type
 DEBUG = 1

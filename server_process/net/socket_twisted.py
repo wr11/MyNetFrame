@@ -36,7 +36,7 @@ class DeferClient(twisted.internet.protocol.Protocol):
 		tFlag = (sHost, iPort)
 		if (tFlag not in g_Connect.keys()) or (tFlag in g_Connect.keys() and not g_Connect[tFlag].connected):
 			g_Connect[tFlag] = self
-			PrintNotify("listen %s %s  connected"%tFlag)
+			PrintNotify("%s %s  connected"%tFlag)
 			if not timer.GetTimer("SendMq_Handler"):
 				timer.Call_out(conf.GetInterval(), "SendMq_Handler", SendMq_Handler)
 
