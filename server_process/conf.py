@@ -355,6 +355,8 @@ def GetConnects():
 		iConcernType = GPS | LGS
 
 	for dServer in SERVER_ALLOCATE:
+		if not dServer:
+			continue
 		lstConfigs = dServer["lstProcessConfig"]
 		if SERVER_ALLOCATE.index(dServer) == 0:
 			continue
@@ -363,15 +365,17 @@ def GetConnects():
 			if iConfigType & iConcernType:
 				lstResult.append((dServer["iServerID"], dConfig))
 
-	lstMCMConfig = SERVER_ALLOCATE[0]["lstProcessConfig"]
-	if iType == MCM and iRole == LEAD:
-		for dConfig1 in lstMCMConfig:
-			if dConfig1["iRole"] == FOLLOWER:
-				lstResult.append((0, dConfig1))
-	elif (iType == MCM and iRole == FOLLOWER) or iType == LCM:
-		for dConfig2 in lstMCMConfig:
-			if dConfig2["iRole"] == LEAD:
-				lstResult.append((0, dConfig2))
-				break
+
+	if SERVER_ALLOCATE[0]:
+		lstMCMConfig = SERVER_ALLOCATE[0]["lstProcessConfig"]
+		if iType == MCM and iRole == LEAD:
+			for dConfig1 in lstMCMConfig:
+				if dConfig1["iRole"] == FOLLOWER:
+					lstResult.append((0, dConfig1))
+		elif (iType == MCM and iRole == FOLLOWER) or iType == LCM:
+			for dConfig2 in lstMCMConfig:
+				if dConfig2["iRole"] == LEAD:
+					lstResult.append((0, dConfig2))
+					break
 
 	return lstResult
