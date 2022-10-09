@@ -21,7 +21,7 @@ def NetCommand(bData):
 		return
 	else:
 		oNetPackage = clientnetpack.UnpackPrepare(bData)
-		iHeader = clientnetpack.UnpackI(oNetPackage)
+		iHeader = clientnetpack.UnpackInt16(oNetPackage)
 		#iSub = clientnetpack.UnpackS(oNetPackage)
 		print("【客户端】接收头部数据 %s" % iHeader)
 		CNetCommand().CallCommand(iHeader, oNetPackage)
