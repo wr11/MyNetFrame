@@ -92,10 +92,21 @@ def PacketAddC(char, oNetPack):
 
 def PacketAddS(sVal, oNetPack):
 	"""
-	默认最长4294967295字节，需要限制字符串长度
+	默认最长4294967295,8字节的长度最好不要用，需要限制字符串长度
 	"""
 	iLen = len(sVal)
-	PacketAddInt32(iLen, oNetPack)
+	if iLen <= 255:
+		PacketAddInt8(1, oNetPack)
+	elif 255 < iLen <= 65535:
+		PacketAddInt8(2, oNetPack)
+	elif 65535 < iLen <= 4294967295:
+		PacketAddInt8(4, oNetPack)
+	elif 4294967296 < iLen <= 9223372036854775807:
+		PacketAddInt8(8, oNetPack)
+	else:
+		PacketAddInt8(8, oNetPack)
+		print("netpack: string len exceeded!")
+	PacketAddI(iLen, oNetPack)
 	if iLen == 1:
 		PacketAddC(sVal, oNetPack)
 	else:
@@ -159,7 +170,19 @@ def UnpackS(oNetPackage):
 	"""
 	默认最长4294967295字节，需要限制字符串长度
 	"""
-	iLen = UnpackInt32(oNetPackage)
+	iBt = UnpackInt8(oNetPackage)
+	iLen = 0
+	if iBt == 1:
+		iLen = UnpackInt8(oNetPackage)
+	elif iBt == 2:
+		iLen = UnpackInt16(oNetPackage)
+	elif iBt == 4:
+		iLen = UnpackInt32(oNetPackage)
+	elif iBt == 8:
+		iLen = UnpackInt64(oNetPackage)
+	else:
+		iLen = UnpackInt64(oNetPackage)
+		print("netpack: string len exceeded!")
 	if iLen == 1:
 		return UnpackC(oNetPackage)
 	else:
