@@ -94,7 +94,8 @@ def PacketAddS(sVal, oNetPack):
 	"""
 	默认最长4294967295,8字节的长度最好不要用，需要限制字符串长度
 	"""
-	iLen = len(sVal)
+	sEncodeStr = sVal.encode('utf-8')
+	iLen = len(sEncodeStr)
 	if iLen <= 255:
 		PacketAddInt8(1, oNetPack)
 	elif 255 < iLen <= 65535:
@@ -108,9 +109,9 @@ def PacketAddS(sVal, oNetPack):
 		print("netpack: string len exceeded!")
 	PacketAddI(iLen, oNetPack)
 	if iLen == 1:
-		PacketAddC(sVal, oNetPack)
+		PacketAddC(sEncodeStr, oNetPack)
 	else:
-		byteData = struct.pack('%ss' % len(sVal), sVal.encode("utf-8"))
+		byteData = struct.pack('%ss' % len(sEncodeStr), sEncodeStr)
 		if byteData:
 			oNetPack.PackInto(byteData)
 
