@@ -116,6 +116,12 @@ def PacketAddS(sVal, oNetPack):
 		if byteData:
 			oNetPack.PackInto(byteData)
 
+def PacketAddBool(bool, oNetPack):
+	iVal = 0
+	if bool:
+		iVal = 1
+	PacketAddInt8(iVal, oNetPack)
+
 def PacketSend(iLink, oNetPack):
 	oMq = mq.GetMq(pubdefines.MSGQUEUE_SEND)
 	bData = oNetPack.m_BytesBuffer
@@ -172,6 +178,13 @@ def UnpackInt64(oNetPackage):
 	无符号8字节整形 0-9223372036854775807 尽量不使用，长整形可以转成字符串进行压包
 	"""
 	return int(oNetPackage.Unpack("Q"))
+
+def UnpackBool(oNetPackage):
+	iVal = UnpackInt8(oNetPackage)
+	bVal = False
+	if iVal:
+		bVal = True
+	return bVal
 
 def UnpackC(oNetPackage):
 	return oNetPackage.Unpack("c").decode("utf-8")
