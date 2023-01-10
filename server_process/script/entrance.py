@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import onlinereload
+onlinereload.Enable()
+
 from pubdefines import MSGQUEUE_SEND, MSGQUEUE_RECV
 from timer import Call_out
 
@@ -8,7 +11,6 @@ import script.user as user
 import script.link as link
 import conf
 import mylog
-import hotfix
 
 def RecvMq_Handler():
 	iMax = conf.GetMaxReceiveNum()
@@ -25,7 +27,7 @@ def RecvMq_Handler():
 def run(oSendMq, oRecvMq, oConfInitFunc):
 	oConfInitFunc()
 	mylog.Init("SCR")
-	hotfix.Init()
+	onlinereload.Init()
 	user.Init()
 	link.Init()
 	mq.SetMq(oSendMq, MSGQUEUE_SEND)

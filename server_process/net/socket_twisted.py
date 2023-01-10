@@ -11,7 +11,6 @@ import timer
 import mq
 import conf
 import mylog
-import hotfix
 
 if "g_Connect" not in globals():
 	g_Connect = {}
